@@ -30,6 +30,8 @@
    :scene-start   (q/millis)
    :calc-duration calc-scene-duration
    :win-time      0
+   :score         0
+   :score-shown   0
    :walls         #{}
    :pos           start})
 

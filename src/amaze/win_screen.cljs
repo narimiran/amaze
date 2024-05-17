@@ -1,7 +1,7 @@
 (ns amaze.win-screen
   (:require
    [quil.core :as q]
-   [amaze.methods :refer [draw key-press]]
+   [amaze.methods :refer [draw update-state key-press]]
    [amaze.config :refer [scene-width scene-height title-size text-size]]
    [amaze.navigation :as nav]))
 
@@ -9,37 +9,57 @@
 (defmethod key-press :win
   [state]
   (case (q/key-as-keyword)
-    :r    (nav/reset-level state)
-    :q    (nav/quit-level state)
-    :else state))
+    :r (nav/reset-level state)
+    :n (nav/quit-level state)
+    state))
 
 
 (defn- draw-title []
   (q/text-size title-size)
   (q/text-align :center)
+  (q/text-style :bold)
   (q/text "YOU WIN" (/ scene-width 2) (/ scene-height 4)))
 
-(defn- draw-score [{:keys [cnt walls win-time]}]
-  (let [left-margin 300
-        right-pos   (- scene-width left-margin)
-        wall-count  (count walls)
-        score       (- wall-count cnt win-time)]
+
+(def left-pos 300)
+(def line-height 20)
+
+(defn- draw-score [{:keys [cnt walls win-time score-shown]}]
+  (let [right-pos     (- scene-width left-pos)
+        wall-count    (count walls)
+        [y1 y2 y3 y4] (range 250 400 line-height)
+        y5            (+ y4 line-height 10)]
     (q/text-size text-size)
+    (q/text-style :normal)
     (q/text-align :left)
-    (q/text "Walls:" left-margin 300)
-    (q/text "Moves:" left-margin 320)
-    (q/text "Time:" left-margin 340)
-    (q/rect left-margin 360 (- right-pos left-margin) 1)
-    (q/text "Score:" left-margin 390)
+    (q/text "Walls:" left-pos y1)
+    (q/text "Moves:" left-pos y2)
+    (q/text "Time:" left-pos y3)
+    (q/rect left-pos y4 (- right-pos left-pos) 1)
+    (q/text "Score:" left-pos y5)
     (q/text-align :right)
-    (q/text wall-count right-pos 300)
-    (q/text cnt right-pos 320)
-    (q/text win-time right-pos 340)
-    (q/text score right-pos 390)))
+    (q/text wall-count right-pos y1)
+    (q/text cnt right-pos y2)
+    (q/text win-time right-pos y3)
+    (q/text score-shown right-pos y5)))
+
+(defn- draw-keys []
+  (let [y-pos 450]
+    (q/text-align :left)
+    (q/text "N   create new maze" left-pos y-pos)
+    (q/text "R   restart this maze" left-pos (+ y-pos line-height))))
 
 (defmethod draw :win
   [state]
   (q/background 240)
   (q/fill 0)
   (draw-title)
-  (draw-score state))
+  (draw-score state)
+  (draw-keys))
+
+
+(defmethod update-state :win
+  [{:keys [score score-shown] :as state}]
+  (if (> score-shown score)
+    (update state :score-shown dec)
+    state))

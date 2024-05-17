@@ -19,12 +19,19 @@
       (assoc :scene-start (q/millis))
       (assoc :screen-type :intro)))
 
+(defn- calc-score [{:keys [cnt walls win-time]}]
+  (- (count walls) cnt win-time))
+
 (defmethod update-state :navigation
-  [{:keys [pos calc-duration scene-start] :as state}]
+  [{:keys [pos calc-duration scene-start walls] :as state}]
   (if (= pos finish)
-    (-> state
-        (assoc :win-time (calc-duration scene-start))
-        (assoc :screen-type :win))
+    (let [win-time (calc-duration scene-start)
+          state    (assoc state :win-time win-time)
+          score    (calc-score state)]
+      (-> state
+          (assoc :score score)
+          (assoc :score-shown (count walls))
+          (assoc :screen-type :win)))
     state))
 
 
@@ -64,7 +71,8 @@
   [{:keys [pos borders walls] :as state} delta]
   (let [new-pos (pt+ pos delta)]
     (if (or (contains? borders new-pos)
-            (contains? walls new-pos))
+            (contains? walls new-pos)
+            (= new-pos (pt+ start [0 -1])))
       state
       (-> state
           (assoc :pos new-pos)
@@ -73,10 +81,10 @@
 (defmethod key-press :navigation
   [state]
   (case (q/key-as-keyword)
-    (:w :ArrowUp)    (check-and-move state [0 -1])
-    (:s :ArrowDown)  (check-and-move state [0  1])
+    (:w :ArrowUp)    (check-and-move state [ 0 -1])
+    (:s :ArrowDown)  (check-and-move state [ 0  1])
     (:a :ArrowLeft)  (check-and-move state [-1  0])
-    (:d :ArrowRight) (check-and-move state [1  0])
+    (:d :ArrowRight) (check-and-move state [ 1  0])
     :r               (reset-level state)
-    :q               (quit-level state)
-    :else            state))
+    :n               (quit-level state)
+    state))
