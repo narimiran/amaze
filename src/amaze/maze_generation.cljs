@@ -10,8 +10,8 @@
        (remove free-pass)))
 
 (defmethod update-state :generation
-  [{:keys [calc-duration] :as state}]
-  (if (>= (calc-duration state) 5)
+  [{:keys [calc-duration scene-start] :as state}]
+  (if (>= (calc-duration scene-start) 5)
     (-> state
         (assoc :screen-type :navigation)
         (assoc :scene-start (q/millis)))

@@ -21,3 +21,6 @@
             [(- fx dx) (- fy dy)]])
          (apply concat)
          set)))
+
+(def text-size 16)
+(def title-size 48)
