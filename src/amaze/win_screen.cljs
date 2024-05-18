@@ -25,7 +25,8 @@
 (defn- draw-score [{:keys [cnt walls win-time score-shown]}]
   (let [right-pos     (- scene-width margin)
         wall-count    (count walls)
-        [y1 y2 y3 y4] (range 250 400 line-height)
+        y1            (/ scene-height 3)
+        [y1 y2 y3 y4] (range y1 400 line-height)
         y5            (+ y4 line-height 10)]
     (q/text-size text-size)
     (q/text-style :normal)
@@ -37,12 +38,12 @@
     (q/text "Score:" margin y5)
     (q/text-align :right)
     (q/text wall-count right-pos y1)
-    (q/text cnt right-pos y2)
-    (q/text win-time right-pos y3)
+    (q/text (str "-" cnt) right-pos y2)
+    (q/text (str "-" win-time) right-pos y3)
     (q/text score-shown right-pos y5)))
 
 (defn- draw-keys []
-  (let [y-pos 450]
+  (let [y-pos (- scene-height 50)]
     (q/text-align :left)
     (q/text "N   create new maze" margin y-pos)
     (q/text "R   restart this maze" margin (+ y-pos line-height))))
@@ -58,6 +59,8 @@
 
 (defmethod update-state :win
   [{:keys [score score-shown] :as state}]
-  (if (> score-shown score)
-    (update state :score-shown dec)
+  ;; faster count-down initially
+  (condp > score
+    (- score-shown 30) (update state :score-shown - 11)
+    score-shown        (update state :score-shown dec)
     state))

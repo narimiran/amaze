@@ -1,7 +1,8 @@
 (ns amaze.config)
 
-(def scene-width 800)
-(def scene-height 600)
+
+(def scene-width 640)
+(def scene-height 480)
 (def size 10)
 
 (def width (/ scene-width size))
@@ -10,7 +11,7 @@
 (def start [1 0])
 (def finish [(dec (dec width)) (dec height)])
 
-(def generating-speed 4)
+(def generating-speed 8)
 (def free-area 3)
 
 (def free-pass
@@ -26,4 +27,4 @@
 (def title-size 48)
 (def text-size 16)
 (def line-height 20)
-(def margin 300)
+(def margin 200)
