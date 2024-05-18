@@ -9,14 +9,14 @@
   (q/text-size title-size)
   (q/text-align :center)
   (q/text-style :bold)
-  (q/text "aMAZE" (/ scene-width 2) (/ scene-height 4)))
+  (q/text "aMAZE" (/ scene-width 2) (/ scene-height 3)))
 
 (defn- draw-text []
   (q/text-size text-size)
   (q/text-style :normal)
   (q/text-align :center)
   (q/text "Press   SPACE   to play"
-          (/ scene-width 2) (* 3 (/ scene-height 4))))
+          (/ scene-width 2) (* 2 (/ scene-height 3))))
 
 (defmethod draw :intro
   [_state]

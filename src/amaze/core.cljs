@@ -20,7 +20,7 @@
   (quot (- (q/millis) scene-start) 1000))
 
 (defn setup []
-  (q/frame-rate 15)
+  (q/frame-rate 12)
   (q/no-stroke)
   (q/ellipse-mode :corner)
   (q/text-font "Iosevka" 18)

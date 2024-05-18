@@ -1,12 +1,12 @@
 (ns amaze.config)
 
 
-(def scene-width 640)
-(def scene-height 480)
-(def size 10)
+(def scene-width 900)
+(def scene-height 750)
+(def size 15)
 
-(def width (/ scene-width size))
-(def height (- (/ scene-height size) 5))
+(def width (quot scene-width size))
+(def height (- (quot scene-height size) 3))
 
 (def start [1 0])
 (def finish [(dec (dec width)) (dec height)])
@@ -27,4 +27,8 @@
 (def title-size 48)
 (def text-size 16)
 (def line-height 20)
-(def margin 200)
+(def margin 250)
+
+(def left-x size)
+(def bottom-1 (- scene-height 28))
+(def bottom-2 (- scene-height 8))

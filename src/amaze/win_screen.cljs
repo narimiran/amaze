@@ -25,8 +25,8 @@
 (defn- draw-score [{:keys [cnt walls win-time score-shown]}]
   (let [right-pos     (- scene-width margin)
         wall-count    (count walls)
-        y1            (/ scene-height 3)
-        [y1 y2 y3 y4] (range y1 400 line-height)
+        y1            (* 0.4 scene-height)
+        [y1 y2 y3 y4] (range y1 600 line-height)
         y5            (+ y4 line-height 10)]
     (q/text-size text-size)
     (q/text-style :normal)
@@ -43,7 +43,7 @@
     (q/text score-shown right-pos y5)))
 
 (defn- draw-keys []
-  (let [y-pos (- scene-height 50)]
+  (let [y-pos (- scene-height 200)]
     (q/text-align :left)
     (q/text "N   create new maze" margin y-pos)
     (q/text "R   restart this maze" margin (+ y-pos line-height))))

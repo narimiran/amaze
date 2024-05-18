@@ -2,7 +2,8 @@
   (:require
    [quil.core :as q]
    [amaze.methods :refer [update-state draw]]
-   [amaze.config :refer [size start finish scene-height scene-width text-size]]))
+   [amaze.config :refer [size start finish scene-width
+                         text-size left-x bottom-1 bottom-2]]))
 
 
 (defn reset-level [state]
@@ -71,7 +72,7 @@
     (q/rect x y 1 1)))
 
 (defn- draw-player [[x-pos y-pos]]
-  (q/fill 80 200 170)
+  (q/fill 50 150 90)
   (q/ellipse x-pos y-pos 1 1))
 
 (defn- draw-text
@@ -80,10 +81,10 @@
   (q/text-size text-size)
   (q/text-style :normal)
   (q/text-align :left)
-  (q/text (str "Time elapsed: " (calc-duration scene-start)) 10 (- scene-height 32))
-  (q/text (str "Moves: " cnt) 10 (- scene-height 10))
-  (q/text "N   create new maze" (quot scene-width 2) (- scene-height 32))
-  (q/text "R   restart this maze" (quot scene-width 2) (- scene-height 10)))
+  (q/text (str "Time elapsed: " (calc-duration scene-start)) left-x bottom-1)
+  (q/text (str "Moves: " cnt) left-x bottom-2)
+  (q/text "N   create new maze" (quot scene-width 2) bottom-1)
+  (q/text "R   restart this maze" (quot scene-width 2) bottom-2))
 
 (defmethod draw :navigation
   [state]

@@ -3,7 +3,7 @@
    [quil.core :as q]
    [amaze.methods :refer [update-state draw key-press]]
    [amaze.config :refer [size width height free-pass generating-speed
-                         text-size scene-height]]))
+                         text-size bottom-1 bottom-2 left-x]]))
 
 
 (defn- create-rand-walls []
@@ -33,8 +33,8 @@
   (q/text-size text-size)
   (q/text-style :normal)
   (q/text-align :left)
-  (q/text (str "Walls: " (count walls)) 10 (- scene-height 32))
-  (q/text "Press   SPACE   to stop" 10 (- scene-height 10)))
+  (q/text (str "Walls: " (count walls)) left-x bottom-1)
+  (q/text "Press   SPACE   to stop" left-x bottom-2))
 
 (defmethod draw :generation
   [{:keys [borders walls scene-start]}]
