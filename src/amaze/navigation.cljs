@@ -50,9 +50,10 @@
   [{:keys [cnt calc-duration scene-start pos]}]
   (q/fill 0)
   (q/text-size text-size)
+  (q/text-style :normal)
+  (q/text-align :left)
   (q/text (str "Time elapsed: " (calc-duration scene-start)) 10 (- scene-height 32))
-  (q/text (str "Moves: " cnt) 10 (- scene-height 10))
-  (q/text (str "Position: " pos) 100 (- scene-height 10)))
+  (q/text (str "Moves: " cnt) 10 (- scene-height 10)))
 
 (defmethod draw :navigation
   [state]

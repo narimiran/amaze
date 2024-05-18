@@ -6,6 +6,7 @@
 
 (def width (/ scene-width size))
 (def height (- (/ scene-height size) 5))
+
 (def start [1 0])
 (def finish [(dec (dec width)) (dec height)])
 
@@ -22,5 +23,7 @@
          (apply concat)
          set)))
 
-(def text-size 16)
 (def title-size 48)
+(def text-size 16)
+(def line-height 20)
+(def margin 300)
