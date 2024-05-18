@@ -8,7 +8,8 @@
 
 (defn- create-rand-walls []
   (->> (repeatedly generating-speed
-                   (fn [_] [(rand-int width) (rand-int height)]))
+                   (fn [_] [(inc (rand-int (- width 2)))
+                            (inc (rand-int (- height 2)))]))
        (remove free-pass)))
 
 (defn- create-vertical-walls []
@@ -16,7 +17,7 @@
         y23 (quot (* 2 height) 3)
         scatter 5]
     (when (< (rand) 0.5) ; slow it down a bit
-      [[(+ x3 (rand-int scatter)) (rand-int y23)]
+      [[(+ x3 (rand-int scatter)) (inc (rand-int y23))]
        [(- width x3 (rand-int scatter)) (+ (quot y23 2) (rand-int y23))]])))
 
 (defn- create-walls []
@@ -36,13 +37,14 @@
   (q/text "Press   SPACE   to stop" 10 (- scene-height 10)))
 
 (defmethod draw :generation
-  [{:keys [borders walls]}]
+  [{:keys [borders walls scene-start]}]
   (q/background 200)
   (draw-text walls)
-  (q/fill 60)
   (q/scale size)
+  (q/fill 0)
   (doseq [[x y] borders]
     (q/rect x y 1 1))
+  (q/fill (max 0 (- 200 (* 0.03 (- (q/millis) scene-start)))))
   (doseq [[x y] walls]
     (q/rect x y 1 1)))
 
