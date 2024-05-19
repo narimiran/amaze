@@ -17,3 +17,5 @@ pom.xml.asc
 
 docs/js/cljs-runtime
 docs/js/manifest.edn
+
+*.zip
