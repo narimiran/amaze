@@ -39,6 +39,7 @@
 
 (def gold-amount 2)
 (def gold-multi 50)
-(def bomb-multi 10)
+(def bomb-multi 20)
+(def bomb-limit 5)
 
 (def background-color 180)
