@@ -8,10 +8,10 @@
 (def width (quot scene-width size))
 (def height (- (quot scene-height size) 3))
 
-(def start [1 0])
+(def start [1 1])
 (def finish [(dec (dec width)) (dec height)])
 
-(def generating-speed 8)
+(def generating-speed 3)
 (def free-area 3)
 
 (def free-pass
@@ -43,3 +43,5 @@
 (def bomb-limit 5)
 
 (def background-color 180)
+
+(def move-timeout 80)

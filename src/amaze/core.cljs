@@ -21,7 +21,7 @@
 
 
 (defn setup []
-  (q/frame-rate 12)
+  (q/frame-rate 30)
   (q/no-stroke)
   (q/ellipse-mode :corner)
   (q/text-font "Iosevka" 18)

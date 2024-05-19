@@ -5,7 +5,7 @@
    [amaze.config :refer [size start finish gold-multi gold-amount
                          bomb-multi bomb-limit
                          text-size x1 x2 x3 x4 x5 bottom-1 bottom-2
-                         background-color]]))
+                         background-color move-timeout]]))
 
 
 (defn reset-level [state]
@@ -37,10 +37,11 @@
   (let [new-pos (pt+ pos delta)]
     (if (or (borders new-pos)
             (walls new-pos)
-            (= new-pos (pt+ start [0 -1])))
+            (< (q/millis) (+ (:last-move state 0) move-timeout)))
       state
       (-> state
           (assoc :pos new-pos)
+          (assoc :last-move (q/millis))
           (update :cnt inc)))))
 
 (defn- make-move
