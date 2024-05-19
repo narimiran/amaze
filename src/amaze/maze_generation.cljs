@@ -3,7 +3,8 @@
    [quil.core :as q]
    [amaze.methods :refer [update-state draw key-press]]
    [amaze.config :refer [size width height free-pass generating-speed
-                         text-size bottom-1 bottom-2 x1 gold-amount]]))
+                         text-size bottom-1 bottom-2 x1 gold-amount
+                         background-color]]))
 
 
 (defn- random-points
@@ -40,13 +41,14 @@
 
 (defmethod draw :generation
   [{:keys [borders walls scene-start]}]
-  (q/background 200)
+  (q/background background-color)
   (draw-text walls)
   (q/scale size)
   (q/fill 0)
   (doseq [[x y] borders]
     (q/rect x y 1 1))
-  (q/fill (max 0 (- 200 (* 0.03 (- (q/millis) scene-start)))))
+  (q/fill (max 0 (- background-color
+                    (* 0.02 (- (q/millis) scene-start)))))
   (doseq [[x y] walls]
     (q/rect x y 1 1)))
 

@@ -20,8 +20,8 @@
 
 (defmethod draw :intro
   [_state]
-  (q/background 20)
-  (q/fill 240)
+  (q/background 10)
+  (q/fill 250)
   (draw-title)
   (draw-text))
 

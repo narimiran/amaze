@@ -3,7 +3,8 @@
    [quil.core :as q]
    [amaze.methods :refer [update-state draw key-press]]
    [amaze.config :refer [size start finish gold-multi bomb-multi
-                         text-size x1 x2 x3 x4 bottom-1 bottom-2]]))
+                         text-size x1 x2 x3 x4 x5 bottom-1 bottom-2
+                         background-color]]))
 
 
 (defn reset-level [state]
@@ -87,7 +88,7 @@
   (q/ellipse x-pos y-pos 1 1))
 
 (defn- draw-text
-  [{:keys [cnt calc-duration scene-start walls bombs-used]}]
+  [{:keys [cnt calc-duration scene-start walls bombs-used picked-gold]}]
   (q/fill 0)
   (q/text-size text-size)
   (q/text-style :normal)
@@ -98,22 +99,24 @@
           x2 bottom-1)
   (q/text (str "Moves: " cnt) x3 bottom-1)
   (q/text (str "Bombs used: " bombs-used) x4 bottom-1)
+  (q/text (str "Gold taken: " (count picked-gold)) x5 bottom-1)
 
   (q/text "SPACE  drop bomp" x1 bottom-2)
   (q/text "N  create new maze" x2 bottom-2)
-  (q/text "R  restart this maze" x3 bottom-2)
-
-  )
+  (q/text "R  restart this maze" x3 bottom-2))
 
 (defn- draw-gold [{:keys [gold picked-gold]}]
   (let [visible-gold (remove picked-gold gold)]
-    (q/fill 250 210 0)
+    (q/fill 255 230 0)
     (doseq [[x y] visible-gold]
-      (q/ellipse x y 1 1))))
+      (q/quad (+ x 0.5) (- y 0.2)
+              (+ x 0.9) (+ y 0.5)
+              (+ x 0.5) (+ y 1.2)
+              (+ x 0.1) (+ y 0.5)))))
 
 (defmethod draw :navigation
   [state]
-  (q/background 200)
+  (q/background background-color)
   (draw-text state)
   (q/fill 0)
   (q/scale size)

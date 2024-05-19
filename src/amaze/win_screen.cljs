@@ -70,7 +70,7 @@
 
 (defmethod draw :win
   [state]
-  (q/background 240)
+  (q/background 250)
   (q/fill 0)
   (draw-title)
   (draw-score state)

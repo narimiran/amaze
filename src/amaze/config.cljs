@@ -31,11 +31,14 @@
 
 (def x1 size)
 (def x2 (* 0.22 scene-width))
-(def x3 (* 0.45 scene-width))
-(def x4 (* 0.70 scene-width))
+(def x3 (* 0.44 scene-width))
+(def x4 (* 0.60 scene-width))
+(def x5 (* 0.78 scene-width))
 (def bottom-1 (- scene-height 28))
 (def bottom-2 (- scene-height 8))
 
 (def gold-amount 2)
 (def gold-multi 50)
 (def bomb-multi 10)
+
+(def background-color 180)
