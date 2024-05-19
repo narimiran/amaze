@@ -115,16 +115,18 @@
 
 
 (defn- deploy-bomb
-  [{[x y] :pos :as state}]
+  [{[x y] :pos , walls :walls , :as state}]
   (let [power 2
         nbs (for [nbx (range (- power) (inc power))
                   nby (range (- power) (inc power))
                   :when (<= (+ (abs nbx) (abs nby)) power)]
               [(+ x nbx) (+ y nby)])
         new-walls (apply disj (:walls state) nbs)]
-    (-> state
-        (update :bombs-used inc)
-        (assoc :walls new-walls))))
+    (if-not (= new-walls walls)
+      (-> state
+          (update :bombs-used inc)
+          (assoc :walls new-walls))
+      state)))
 
 (defmethod key-press :navigation
   [state]
