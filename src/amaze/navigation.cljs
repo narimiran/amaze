@@ -1,7 +1,7 @@
 (ns amaze.navigation
   (:require
    [quil.core :as q]
-   [amaze.methods :refer [update-state draw]]
+   [amaze.methods :refer [update-state draw key-press]]
    [amaze.config :refer [size start finish scene-width
                          text-size left-x bottom-1 bottom-2]]))
 
@@ -9,6 +9,8 @@
 (defn reset-level [state]
   (-> state
       (assoc :screen-type :navigation)
+      (assoc :walls (:orig-walls state))
+      (assoc :bombs-used 0)
       (assoc :pos start)
       (assoc :scene-start (q/millis))
       (assoc :cnt 0)))
@@ -17,11 +19,12 @@
   (-> state
       reset-level
       (assoc :walls #{})
+      (assoc :bombs-used 0)
       (assoc :scene-start (q/millis))
       (assoc :screen-type :generation)))
 
-(defn- calc-score [{:keys [cnt walls win-time]}]
-  (- (count walls) cnt win-time))
+(defn- calc-score [{:keys [cnt walls win-time bombs-used]}]
+  (- (count walls) cnt win-time bombs-used))
 
 (defn- pt+ [[x y] [dx dy]]
   [(+ x dx) (+ y dy)])
@@ -46,8 +49,6 @@
     (:s :ArrowDown)  (check-and-move state [ 0  1])
     (:a :ArrowLeft)  (check-and-move state [-1  0])
     (:d :ArrowRight) (check-and-move state [ 1  0])
-    :r               (reset-level state)
-    :n               (quit-level state)
     state))
 
 (defmethod update-state :navigation
@@ -94,3 +95,28 @@
   (q/scale size)
   (draw-obstacles state)
   (draw-player (:pos state)))
+
+
+
+(defn- deploy-bomb
+  [{[x y] :pos :as state}]
+  (let [power 2
+        nbs (for [nbx (range (- power) (inc power))
+                  nby (range (- power) (inc power))
+                  :when (<= (+ (abs nbx) (abs nby)) power)]
+              [(+ x nbx) (+ y nby)])
+        new-walls (apply disj (:walls state) nbs)]
+    (-> state
+        (update :bombs-used inc)
+        (assoc :walls new-walls))))
+
+
+
+(defmethod key-press :navigation
+  [state]
+  (case (q/key-as-keyword)
+    :space (deploy-bomb state)
+    :r     (reset-level state)
+    :n     (quit-level state)
+    state
+    ))

@@ -54,6 +54,7 @@
   (case (q/key-as-keyword)
     :space (-> state
                (assoc :screen-type :navigation)
+               (assoc :orig-walls (:walls state))
                (assoc :scene-start (q/millis)))
     :q     (-> state
                (assoc :screen-type :intro)

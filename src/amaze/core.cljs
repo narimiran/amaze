@@ -32,7 +32,9 @@
    :win-time      0
    :score         0
    :score-shown   0
+   :bombs-used    0
    :walls         #{}
+   :orig-walls    #{}
    :pos           start})
 
 (defn -main []
