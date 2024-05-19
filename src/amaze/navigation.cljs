@@ -3,7 +3,7 @@
    [quil.core :as q]
    [amaze.methods :refer [update-state draw key-press]]
    [amaze.config :refer [size start finish scene-width
-                         text-size left-x bottom-1 bottom-2
+                         text-size x1 x2 x3 x4 bottom-1 bottom-2
                          gold-multi bomb-multi]]))
 
 
@@ -87,15 +87,23 @@
   (q/ellipse x-pos y-pos 1 1))
 
 (defn- draw-text
-  [{:keys [cnt calc-duration scene-start]}]
+  [{:keys [cnt calc-duration scene-start walls bombs-used]}]
   (q/fill 0)
   (q/text-size text-size)
   (q/text-style :normal)
   (q/text-align :left)
-  (q/text (str "Time elapsed: " (calc-duration scene-start)) left-x bottom-1)
-  (q/text (str "Moves: " cnt) left-x bottom-2)
-  (q/text "N   create new maze" (quot scene-width 2) bottom-1)
-  (q/text "R   restart this maze" (quot scene-width 2) bottom-2))
+
+  (q/text (str "Walls: " (count walls)) x1 bottom-1)
+  (q/text (str "Time elapsed: " (calc-duration scene-start))
+          x2 bottom-1)
+  (q/text (str "Moves: " cnt) x3 bottom-1)
+  (q/text (str "Bombs used: " bombs-used) x4 bottom-1)
+
+  (q/text "SPACE  drop bomp" x1 bottom-2)
+  (q/text "N  create new maze" x2 bottom-2)
+  (q/text "R  restart this maze" x3 bottom-2)
+
+  )
 
 (defn- draw-gold [{:keys [gold picked-gold]}]
   (let [visible-gold (remove picked-gold gold)]

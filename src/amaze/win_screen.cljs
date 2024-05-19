@@ -72,6 +72,6 @@
   [{:keys [score score-shown] :as state}]
   ;; faster count-down initially
   (condp > score
-    (- score-shown 30) (update state :score-shown - 11)
+    (- score-shown 20) (update state :score-shown - 11)
     score-shown        (update state :score-shown dec)
     state))

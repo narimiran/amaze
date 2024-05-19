@@ -29,7 +29,10 @@
 (def line-height 20)
 (def margin 250)
 
-(def left-x size)
+(def x1 size)
+(def x2 (* 0.22 scene-width))
+(def x3 (* 0.45 scene-width))
+(def x4 (* 0.70 scene-width))
 (def bottom-1 (- scene-height 28))
 (def bottom-2 (- scene-height 8))
 
