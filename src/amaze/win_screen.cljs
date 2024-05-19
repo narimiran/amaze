@@ -23,14 +23,16 @@
 
 
 (defn- draw-score
-  [{:keys [cnt walls win-time score-shown bombs-used picked-gold]}]
+  [{:keys [cnt walls win-time score-shown bombs-used picked-gold
+           maze-best total-best]}]
   (let [right-pos  (- scene-width margin)
         wall-count (count walls)
         gold-count (count picked-gold)
         y1         (* 0.35 scene-height)
         [y1 y11 y2 y3 y4 y5]
         (range y1 600 line-height)
-        y6         (+ y5 line-height 10)]
+        y6         (+ y5 line-height 10)
+        [y7 y8] (range (+ 90 y6) 600 (* 2 line-height))]
     (q/text-size text-size)
     (q/text-style :normal)
     (q/text-align :left)
@@ -43,6 +45,10 @@
             margin y4)
     (q/rect margin y5 (- right-pos margin) 1)
     (q/text "Score:" margin y6)
+    ()
+    (q/text "Best score for this maze:" margin y7)
+    (q/text "Best score ever:" margin y8)
+
     (q/text-align :right)
     (q/text wall-count right-pos y1)
     (q/text (* gold-multi gold-count) right-pos y11)
@@ -51,10 +57,13 @@
     (q/text (str (when (pos? bombs-used) "-")
                  (* bomb-multi bombs-used))
             right-pos y4)
-    (q/text score-shown right-pos y6)))
+    (q/text score-shown right-pos y6)
+    (q/text maze-best right-pos y7)
+    (q/text total-best right-pos y8)))
+
 
 (defn- draw-keys []
-  (let [y-pos (- scene-height 150)]
+  (let [y-pos (- scene-height 120)]
     (q/text-align :left)
     (q/text "N   create new maze" margin y-pos)
     (q/text "R   restart this maze" margin (+ y-pos line-height))))
@@ -68,10 +77,16 @@
   (draw-keys))
 
 
+(defn- update-score
+  [{:keys [maze-best total-best score] :as state}]
+  (-> state
+      (assoc :total-best (max total-best score))
+      (assoc :maze-best (max maze-best score))))
+
 (defmethod update-state :win
   [{:keys [score score-shown] :as state}]
   ;; faster count-down initially
   (condp > score
     (- score-shown 20) (update state :score-shown - 11)
     score-shown        (update state :score-shown dec)
-    state))
+    (update-score state)))

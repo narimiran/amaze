@@ -2,9 +2,8 @@
   (:require
    [quil.core :as q]
    [amaze.methods :refer [update-state draw key-press]]
-   [amaze.config :refer [size start finish scene-width
-                         text-size x1 x2 x3 x4 bottom-1 bottom-2
-                         gold-multi bomb-multi]]))
+   [amaze.config :refer [size start finish gold-multi bomb-multi
+                         text-size x1 x2 x3 x4 bottom-1 bottom-2]]))
 
 
 (defn reset-level [state]
@@ -21,6 +20,7 @@
   (-> state
       reset-level
       (assoc :walls #{})
+      (assoc :maze-best 0)
       (assoc :screen-type :generation)))
 
 (defn- calc-score [{:keys [cnt walls win-time bombs-used picked-gold]}]

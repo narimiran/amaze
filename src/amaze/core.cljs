@@ -19,6 +19,7 @@
 (defn calc-scene-duration [scene-start]
   (quot (- (q/millis) scene-start) 1000))
 
+
 (defn setup []
   (q/frame-rate 12)
   (q/no-stroke)
@@ -33,6 +34,8 @@
    :score         0
    :score-shown   0
    :bombs-used    0
+   :maze-best     0
+   :total-best    0
    :gold          #{}
    :picked-gold   #{}
    :walls         #{}
