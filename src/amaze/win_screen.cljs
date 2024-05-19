@@ -19,7 +19,7 @@
   (q/text-size title-size)
   (q/text-align :center)
   (q/text-style :bold)
-  (q/text "YOU WIN" (/ scene-width 2) (/ scene-height 5)))
+  (q/text "aMAZEing VICTORY" (/ scene-width 2) (/ scene-height 5)))
 
 
 (defn- draw-score
