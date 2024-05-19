@@ -33,6 +33,8 @@
    :score         0
    :score-shown   0
    :bombs-used    0
+   :gold          #{}
+   :picked-gold   #{}
    :walls         #{}
    :orig-walls    #{}
    :pos           start})

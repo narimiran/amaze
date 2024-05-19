@@ -32,3 +32,7 @@
 (def left-x size)
 (def bottom-1 (- scene-height 28))
 (def bottom-2 (- scene-height 8))
+
+(def gold-amount 2)
+(def gold-multi 50)
+(def bomb-multi 10)

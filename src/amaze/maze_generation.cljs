@@ -3,14 +3,16 @@
    [quil.core :as q]
    [amaze.methods :refer [update-state draw key-press]]
    [amaze.config :refer [size width height free-pass generating-speed
-                         text-size bottom-1 bottom-2 left-x]]))
+                         text-size bottom-1 bottom-2 left-x gold-amount]]))
 
 
-(defn- create-rand-walls []
-  (->> (repeatedly generating-speed
-                   (fn [_] [(inc (rand-int (- width 2)))
-                            (inc (rand-int (- height 2)))]))
-       (remove free-pass)))
+(defn- random-points
+  ([] (random-points generating-speed))
+  ([amount]
+   (->> (repeatedly amount
+                    (fn [_] [(inc (rand-int (- width 2)))
+                             (inc (rand-int (- height 2)))]))
+        (remove free-pass))))
 
 (defn- create-vertical-walls []
   (let [x3 (quot width 3)
@@ -21,7 +23,7 @@
        [(- width x3 (rand-int scatter)) (+ (quot y23 2) (rand-int y23))]])))
 
 (defn- create-walls []
-  (into (create-rand-walls) (create-vertical-walls)))
+  (into (random-points) (create-vertical-walls)))
 
 (defmethod update-state :generation
   [state]
@@ -49,12 +51,19 @@
     (q/rect x y 1 1)))
 
 
+(defn- place-gold [walls]
+  (->> (random-points 100)
+       (remove walls)
+       (take gold-amount)
+       set))
+
 (defmethod key-press :generation
-  [state]
+  [{:keys [walls] :as state}]
   (case (q/key-as-keyword)
     :space (-> state
                (assoc :screen-type :navigation)
-               (assoc :orig-walls (:walls state))
+               (assoc :orig-walls walls)
+               (assoc :gold (place-gold walls))
                (assoc :scene-start (q/millis)))
     :q     (-> state
                (assoc :screen-type :intro)

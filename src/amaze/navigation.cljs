@@ -3,7 +3,8 @@
    [quil.core :as q]
    [amaze.methods :refer [update-state draw key-press]]
    [amaze.config :refer [size start finish scene-width
-                         text-size left-x bottom-1 bottom-2]]))
+                         text-size left-x bottom-1 bottom-2
+                         gold-multi bomb-multi]]))
 
 
 (defn reset-level [state]
@@ -12,6 +13,7 @@
       (assoc :walls (:orig-walls state))
       (assoc :bombs-used 0)
       (assoc :pos start)
+      (assoc :picked-gold #{})
       (assoc :scene-start (q/millis))
       (assoc :cnt 0)))
 
@@ -19,12 +21,11 @@
   (-> state
       reset-level
       (assoc :walls #{})
-      (assoc :bombs-used 0)
-      (assoc :scene-start (q/millis))
       (assoc :screen-type :generation)))
 
-(defn- calc-score [{:keys [cnt walls win-time bombs-used]}]
-  (- (count walls) cnt win-time bombs-used))
+(defn- calc-score [{:keys [cnt walls win-time bombs-used picked-gold]}]
+  (- (+ (count walls) (* gold-multi (count picked-gold)))
+     cnt win-time (* bomb-multi bombs-used)))
 
 (defn- pt+ [[x y] [dx dy]]
   [(+ x dx) (+ y dy)])
@@ -52,17 +53,26 @@
     state))
 
 (defmethod update-state :navigation
-  [{:keys [pos calc-duration scene-start walls] :as state}]
+  [{:keys [pos calc-duration scene-start walls gold picked-gold] :as state}]
   (cond
-    (= pos finish)   (let [win-time (calc-duration scene-start)
-                           state    (assoc state :win-time win-time)
-                           score    (calc-score state)]
-                       (-> state
-                           (assoc :score score)
-                           (assoc :score-shown (count walls))
-                           (assoc :screen-type :win)))
-    (q/key-pressed?) (make-move state (q/key-as-keyword))
-    :else            state))
+    (= pos finish)
+    (let [win-time (calc-duration scene-start)
+          state    (assoc state :win-time win-time)
+          score    (calc-score state)]
+      (-> state
+          (assoc :score score)
+          (assoc :score-shown (count walls))
+          (assoc :screen-type :win)))
+
+    (and (gold pos)
+         (not (picked-gold pos)))
+    (update state :picked-gold conj pos)
+
+    (q/key-pressed?)
+    (make-move state (q/key-as-keyword))
+
+    :else
+    state))
 
 
 (defn- draw-obstacles
@@ -87,6 +97,12 @@
   (q/text "N   create new maze" (quot scene-width 2) bottom-1)
   (q/text "R   restart this maze" (quot scene-width 2) bottom-2))
 
+(defn- draw-gold [{:keys [gold picked-gold]}]
+  (let [visible-gold (remove picked-gold gold)]
+    (q/fill 250 210 0)
+    (doseq [[x y] visible-gold]
+      (q/ellipse x y 1 1))))
+
 (defmethod draw :navigation
   [state]
   (q/background 200)
@@ -94,8 +110,8 @@
   (q/fill 0)
   (q/scale size)
   (draw-obstacles state)
+  (draw-gold state)
   (draw-player (:pos state)))
-
 
 
 (defn- deploy-bomb
@@ -110,13 +126,10 @@
         (update :bombs-used inc)
         (assoc :walls new-walls))))
 
-
-
 (defmethod key-press :navigation
   [state]
   (case (q/key-as-keyword)
     :space (deploy-bomb state)
     :r     (reset-level state)
     :n     (quit-level state)
-    state
-    ))
+    state))
