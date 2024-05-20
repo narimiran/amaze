@@ -3,7 +3,7 @@
    [quil.core :as q]
    [amaze.methods :refer [update-state draw key-press]]
    [amaze.config :refer [size start finish gold-multi gold-amount
-                         bomb-multi bomb-limit
+                         bomb-multi bomb-limit width height
                          text-size x1 x2 x3 x4 x5 bottom-1 bottom-2
                          background-color move-timeout]]))
 
@@ -116,6 +116,16 @@
               (+ x 0.5) (+ y 1.2)
               (+ x 0.1) (+ y 0.5)))))
 
+(defn- draw-bomb [{:keys [bomb-loc bomb-time]}]
+  (when (<= (q/millis) (+ 300 bomb-time))
+    (q/fill (+ 200 (rand-int 55))
+            (+ 150 (rand-int 105))
+            (+ 50 (rand-int 155)))
+    (doseq [[x y] bomb-loc
+            :when (and (< 0 x width)
+                       (< 0 y height))]
+      (q/rect (+ 0.15 x) (+ 0.15 y) 0.7 0.7))))
+
 (defmethod draw :navigation
   [state]
   (q/background background-color)
@@ -124,6 +134,7 @@
   (q/scale size)
   (draw-obstacles state)
   (draw-gold state)
+  (draw-bomb state)
   (draw-player (:pos state)))
 
 
@@ -140,6 +151,8 @@
           walls' (apply disj (:walls state) nbs)]
       (if-not (= walls' walls)
         (-> state
+            (assoc :bomb-loc nbs)
+            (assoc :bomb-time (q/millis))
             (update :bombs-used inc)
             (assoc :walls walls'))
         state))))
