@@ -116,7 +116,7 @@
               (+ x 0.5) (+ y 1.2)
               (+ x 0.1) (+ y 0.5)))))
 
-(defn- draw-bomb [{:keys [bomb-loc bomb-time]}]
+(defn- draw-bomb-explosion [{:keys [bomb-loc bomb-time]}]
   (when (<= (q/millis) (+ 300 bomb-time))
     (q/fill (+ 200 (rand-int 55))
             (+ 150 (rand-int 105))
@@ -134,7 +134,7 @@
   (q/scale size)
   (draw-obstacles state)
   (draw-gold state)
-  (draw-bomb state)
+  (draw-bomb-explosion state)
   (draw-player (:pos state)))
 
 
@@ -149,7 +149,7 @@
                        :when (<= (+ (abs nbx) (abs nby)) power)]
                    [(+ x nbx) (+ y nby)])
           walls' (apply disj (:walls state) nbs)]
-      (if-not (= walls' walls)
+      (if (not= walls' walls)
         (-> state
             (assoc :bomb-loc nbs)
             (assoc :bomb-time (q/millis))

@@ -7,29 +7,29 @@
                          background-color]]))
 
 
-(defn- random-points
-  ([] (random-points generating-speed))
-  ([amount]
-   (->> (repeatedly amount
-                    (fn [_] [(inc (rand-int (- width 2)))
-                             (inc (rand-int (- height 2)))]))
-        (remove free-pass))))
+(defn- random-points [amount]
+  (repeatedly amount
+              (fn [_] [(inc (rand-int (- width 2)))
+                       (inc (rand-int (- height 2)))])))
 
 (defn- fade-out [start]
-  ;; Initially, focus more on the walls, then ease out.
   (- 0.8
      (* 0.0001 (- (q/millis) start))))
 
 (defn- create-vertical-walls [{:keys [scene-start]}]
-  (let [x3 (quot width 3)
-        y23 (quot (* 2 height) 3)
+  (let [x3      (quot width 3)
+        y23     (quot (* 2 height) 3)
         scatter 5]
+    ;; Initially focus more on the walls, then ease out and leave it to random.
     (when (< (rand) (fade-out scene-start))
       [[(+ x3 (rand-int scatter)) (inc (rand-int y23))]
        [(- width x3 (rand-int scatter)) (+ (quot y23 2) (rand-int y23))]])))
 
 (defn- create-walls [state]
-  (into (random-points) (create-vertical-walls state)))
+  (->> state
+       create-vertical-walls
+       (into (random-points generating-speed))
+       (remove free-pass)))
 
 (defmethod update-state :generation
   [state]
@@ -59,7 +59,7 @@
 
 
 (defn- place-gold [walls]
-  (->> (random-points 100)
+  (->> (random-points 30)
        (remove walls)
        (take gold-amount)
        set))

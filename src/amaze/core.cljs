@@ -19,7 +19,6 @@
 (defn- calc-scene-duration [scene-start]
   (quot (- (q/millis) scene-start) 1000))
 
-
 (defn- settings []
   (q/smooth 8))
 
