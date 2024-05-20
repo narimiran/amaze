@@ -97,15 +97,15 @@
   (q/text-align :left)
 
   (q/text (str "Walls: " (count walls)) x1 bottom-1)
-  (q/text (str "Time elapsed: " (calc-duration scene-start))
+  (q/text (str "Time: " (calc-duration scene-start))
           x2 bottom-1)
-  (q/text (str "Moves: " cnt) x3 bottom-1)
-  (q/text (str "Bombs used: " bombs-used "/" bomb-limit) x4 bottom-1)
-  (q/text (str "Gold taken: " (count picked-gold) "/" gold-amount) x5 bottom-1)
+  (q/text (str "Bombs used: " bombs-used "/" bomb-limit) x3 bottom-1)
+  (q/text (str "Gold taken: " (count picked-gold) "/" gold-amount) x4 bottom-1)
+  (q/text (str "Moves: " cnt) x5 bottom-1)
 
   (q/text "SPACE  drop bomp" x1 bottom-2)
-  (q/text "N  create new maze" x2 bottom-2)
-  (q/text "R  restart this maze" x3 bottom-2))
+  (q/text "N  new maze" x2 bottom-2)
+  (q/text "R  restart maze" x3 bottom-2))
 
 (defn- draw-gold [{:keys [gold picked-gold]}]
   (let [visible-gold (remove picked-gold gold)]

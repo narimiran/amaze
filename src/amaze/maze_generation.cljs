@@ -15,20 +15,25 @@
                              (inc (rand-int (- height 2)))]))
         (remove free-pass))))
 
-(defn- create-vertical-walls []
+(defn- fade-out [start]
+  ;; Initially, focus more on the walls, then ease out.
+  (- 0.8
+     (* 0.0001 (- (q/millis) start))))
+
+(defn- create-vertical-walls [{:keys [scene-start]}]
   (let [x3 (quot width 3)
         y23 (quot (* 2 height) 3)
         scatter 5]
-    (when (< (rand) 0.2) ; slow it down a bit
+    (when (< (rand) (fade-out scene-start))
       [[(+ x3 (rand-int scatter)) (inc (rand-int y23))]
        [(- width x3 (rand-int scatter)) (+ (quot y23 2) (rand-int y23))]])))
 
-(defn- create-walls []
-  (into (random-points) (create-vertical-walls)))
+(defn- create-walls [state]
+  (into (random-points) (create-vertical-walls state)))
 
 (defmethod update-state :generation
   [state]
-  (update state :walls into (create-walls)))
+  (update state :walls into (create-walls state)))
 
 
 (defn- draw-text [walls]
