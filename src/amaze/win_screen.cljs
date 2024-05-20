@@ -19,7 +19,7 @@
   (q/text-size title-size)
   (q/text-align :center)
   (q/text-style :bold)
-  (q/text "aMAZEing VICTORY" (/ scene-width 2) (/ scene-height 5)))
+  (q/text "aMAZEing VICTORY" (/ scene-width 2) (/ scene-height 6)))
 
 
 (defn- draw-score
@@ -28,11 +28,11 @@
   (let [right-pos  (- scene-width margin)
         wall-count (count walls)
         gold-count (count picked-gold)
-        y1         (* 0.35 scene-height)
+        y1         (* 0.30 scene-height)
         [y1 y11 y2 y3 y4 y5]
         (range y1 600 line-height)
         y6         (+ y5 line-height 10)
-        [y7 y8] (range (+ 90 y6) 600 (* 2 line-height))]
+        [y7 y8] (range (+ 50 y6) 600 line-height)]
     (q/text-size text-size)
     (q/text-style :normal)
     (q/text-align :left)
@@ -45,7 +45,6 @@
             margin y4)
     (q/rect margin y5 (- right-pos margin) 1)
     (q/text "Score:" margin y6)
-    ()
     (q/text "Best score for this maze:" margin y7)
     (q/text "Best score ever:" margin y8)
 

@@ -19,7 +19,7 @@
   (let [x3 (quot width 3)
         y23 (quot (* 2 height) 3)
         scatter 5]
-    (when (< (rand) 0.5) ; slow it down a bit
+    (when (< (rand) 0.2) ; slow it down a bit
       [[(+ x3 (rand-int scatter)) (inc (rand-int y23))]
        [(- width x3 (rand-int scatter)) (+ (quot y23 2) (rand-int y23))]])))
 

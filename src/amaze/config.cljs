@@ -1,12 +1,12 @@
 (ns amaze.config)
 
 
-(def scene-width 900)
-(def scene-height 750)
-(def size 15)
+(def scene-width 840)
+(def scene-height 600)
+(def size 12)
 
 (def width (quot scene-width size))
-(def height (- (quot scene-height size) 3))
+(def height (- (quot scene-height size) 4))
 
 (def start [1 1])
 (def finish [(dec (dec width)) (dec height)])
@@ -24,10 +24,10 @@
          (apply concat)
          set)))
 
-(def title-size 48)
-(def text-size 16)
+(def title-size 42)
+(def text-size 14)
 (def line-height 20)
-(def margin 250)
+(def margin 220)
 
 (def x1 size)
 (def x2 (* 0.22 scene-width))
@@ -42,6 +42,6 @@
 (def bomb-multi 20)
 (def bomb-limit 5)
 
-(def background-color 180)
+(def background-color 210)
 
 (def move-timeout 80)
