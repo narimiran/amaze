@@ -30,8 +30,8 @@
       [[x y]])))
 
 (defn- fade-out [start]
-  (- 0.9
-     (* 0.00005 (- (q/millis) start))))
+  (- 0.6
+     (* 0.00001 (- (q/millis) start))))
 
 (defn- create-elliptical-walls [{:keys [scene-start]}]
   (let [a (quot width 6)
