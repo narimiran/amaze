@@ -13,7 +13,9 @@
       (assoc :screen-type :navigation)
       (assoc :walls (:orig-walls state))
       (assoc :bombs-used 0)
+      (assoc :bombs-expls [])
       (assoc :pos start)
+      (assoc :path [start])
       (assoc :picked-gold #{})
       (assoc :scene-start (q/millis))
       (assoc :cnt 0)))
@@ -41,6 +43,7 @@
       state
       (-> state
           (assoc :pos new-pos)
+          (update :path conj new-pos)
           (assoc :last-move (q/millis))
           (update :cnt inc)))))
 
@@ -78,7 +81,7 @@
     state))
 
 
-(defn- draw-obstacles
+(defn draw-obstacles
   [{:keys [borders walls]}]
   (doseq [[x y] borders]
     (q/rect x y 1 1))
@@ -107,23 +110,21 @@
   (q/text "N  new maze" x2 bottom-2)
   (q/text "R  restart maze" x3 bottom-2))
 
-(defn- draw-gold [{:keys [gold picked-gold]}]
-  (let [visible-gold (remove picked-gold gold)]
+(defn draw-gold [{:keys [gold picked-gold]} remove-picked?]
+  (let [visible-gold (if remove-picked? (remove picked-gold gold) gold)]
     (q/fill 255 230 0)
     (doseq [[x y] visible-gold]
-      (q/quad (+ x 0.5) (- y 0.2)
-              (+ x 0.9) (+ y 0.5)
-              (+ x 0.5) (+ y 1.2)
-              (+ x 0.1) (+ y 0.5)))))
+      (q/quad (+ x 0.5) (- y 0.3)
+              (+ x 1.0) (+ y 0.5)
+              (+ x 0.5) (+ y 1.3)
+              (+ x 0.0) (+ y 0.5)))))
 
 (defn- draw-bomb-explosion [{:keys [bomb-loc bomb-time]}]
   (when (<= (q/millis) (+ 300 bomb-time))
     (q/fill (+ 200 (rand-int 55))
             (+ 150 (rand-int 105))
             (+ 50 (rand-int 155)))
-    (doseq [[x y] bomb-loc
-            :when (and (< 0 x (dec width))
-                       (< 0 y (dec height)))]
+    (doseq [[x y] bomb-loc]
       (q/rect (+ 0.15 x) (+ 0.15 y) 0.7 0.7))))
 
 (defmethod draw :navigation
@@ -133,7 +134,7 @@
   (q/fill 0)
   (q/scale size)
   (draw-obstacles state)
-  (draw-gold state)
+  (draw-gold state true)
   (draw-bomb-explosion state)
   (draw-player (:pos state)))
 
@@ -146,14 +147,19 @@
     (let [power  2
           nbs    (for [nbx   (range (- power) (inc power))
                        nby   (range (- power) (inc power))
-                       :when (<= (+ (abs nbx) (abs nby)) power)]
-                   [(+ x nbx) (+ y nby)])
+                       :let  [x' (+ x nbx)
+                              y' (+ y nby)]
+                       :when (and (<= (+ (abs nbx) (abs nby)) power)
+                                  (< 0 x' (dec width))
+                                  (< 0 y' (dec height)))]
+                   [x' y'])
           walls' (apply disj (:walls state) nbs)]
       (if (not= walls' walls)
         (-> state
             (assoc :bomb-loc nbs)
             (assoc :bomb-time (q/millis))
             (update :bombs-used inc)
+            (update :bombs-expls into nbs)
             (assoc :walls walls'))
         state))))
 

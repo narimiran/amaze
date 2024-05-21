@@ -36,13 +36,15 @@
    :score         0
    :score-shown   0
    :bombs-used    0
+   :bomb-expls    []
    :maze-best     0
    :total-best    0
    :gold          #{}
    :picked-gold   #{}
    :walls         #{}
    :orig-walls    #{}
-   :pos           start})
+   :pos           start
+   :path          [start]})
 
 (defn -main []
   (q/sketch

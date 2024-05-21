@@ -24,10 +24,11 @@
          (apply concat)
          set)))
 
-(def title-size 42)
+(def title-size 36)
 (def text-size 14)
 (def line-height 20)
-(def margin 220)
+(def left-margin 480)
+(def right-margin 20)
 
 (def x1 size)
 (def x2 (* 0.23 scene-width))
