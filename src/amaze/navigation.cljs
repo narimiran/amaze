@@ -121,11 +121,18 @@
 (defn draw-gold [{:keys [gold picked-gold]} remove-picked?]
   (let [visible-gold (if remove-picked? (remove picked-gold gold) gold)]
     (q/fill 255 230 0)
-    (doseq [[x y] visible-gold]
-      (q/quad (+ x 0.5) (- y 0.3)
-              (+ x 1.0) (+ y 0.5)
-              (+ x 0.5) (+ y 1.3)
-              (+ x 0.0) (+ y 0.5)))))
+    (let [[dx1 dx2 dx3 dx4] [0.5 1.0 0.5 0.0]
+          [dy1 dy2 dy3 dy4] [-0.3 0.5 1.3 0.5]]
+      (doseq [[x y] visible-gold]
+        (if (zero? (mod (quot (q/millis) 500) 2))
+          (q/quad (+ x dx1) (+ y dy1)
+                  (+ x dx2) (+ y dy2)
+                  (+ x dx3) (+ y dy3)
+                  (+ x dx4) (+ y dy4))
+          (q/quad (+ x dy1) (+ y dx1)
+                  (+ x dy2) (+ y dx2)
+                  (+ x dy3) (+ y dx3)
+                  (+ x dy4) (+ y dx4)))))))
 
 (defn- draw-bomb-explosion [{:keys [bomb-loc bomb-time]}]
   (when (<= (q/millis) (+ 300 bomb-time))
