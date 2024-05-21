@@ -11,7 +11,7 @@
 (def start [1 1])
 (def finish [(dec (dec width)) (dec height)])
 
-(def generating-speed 3)
+(def generating-speed 2)
 (def free-area 3)
 
 (def free-pass
@@ -39,7 +39,7 @@
 
 (def gold-amount 2)
 (def gold-multi 50)
-(def bomb-multi 20)
+(def bomb-multi 30)
 (def bomb-limit 5)
 
 (def background-color 210)

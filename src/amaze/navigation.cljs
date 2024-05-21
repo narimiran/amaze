@@ -122,8 +122,8 @@
             (+ 150 (rand-int 105))
             (+ 50 (rand-int 155)))
     (doseq [[x y] bomb-loc
-            :when (and (< 0 x width)
-                       (< 0 y height))]
+            :when (and (< 0 x (dec width))
+                       (< 0 y (dec height)))]
       (q/rect (+ 0.15 x) (+ 0.15 y) 0.7 0.7))))
 
 (defmethod draw :navigation

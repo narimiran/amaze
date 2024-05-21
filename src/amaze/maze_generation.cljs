@@ -7,29 +7,53 @@
                          background-color]]))
 
 
-(defn- random-points [amount]
-  (repeatedly amount
-              (fn [_] [(inc (rand-int (- width 2)))
-                       (inc (rand-int (- height 2)))])))
+(defn- random-point []
+  [(inc (rand-int (- width 2)))
+   (inc (rand-int (- height 2)))])
+
+(defn- create-random-walls []
+  (let [[x y] (random-point)
+        x-    (dec x)
+        x+    (inc x)
+        y-    (dec y)
+        y+    (inc y)
+        f     10]
+    (condp > (rand)
+      (/ 1 f) [[x- y] [x y] [x+ y] [x+ y+]]
+      (/ 2 f) [[x- y-] [x y-] [x+ y-] [x- y+] [x+ y+]]
+      (/ 3 f) [[x y-] [x- y] [x y] [x+ y] [x y+]]
+      (/ 4 f) [[x y-] [x y] [x y+] [x+ y+]]
+      (/ 5 f) [[x- y-] [x- y] [x+ y] [x+ y+]]
+      (/ 6 f) [[x- y-] [x y-] [x y+] [x+ y+]]
+      (/ 7 f) [[x- y+] [x y] [x y-] [x+ y-]]
+      (/ 8 f) [[x- y] [x y] [x- y+] [x y+]]
+      [[x y]])))
 
 (defn- fade-out [start]
-  (- 0.8
-     (* 0.0001 (- (q/millis) start))))
+  (- 0.9
+     (* 0.00005 (- (q/millis) start))))
 
-(defn- create-vertical-walls [{:keys [scene-start]}]
-  (let [x3      (quot width 3)
-        y23     (quot (* 2 height) 3)
-        scatter 5]
-    ;; Initially focus more on the walls, then ease out and leave it to random.
+(defn- create-elliptical-walls [{:keys [scene-start]}]
+  (let [a (quot width 6)
+        aa (* 2 a)
+        b (quot (* 3 height) 5)
+        x (- (rand-int aa) a)
+        y (inc (rand-int b))]
+    (when (< (+ (/ (* x x) (* a a))
+                (/ (* y y) (* b b)))
+             1)
     (when (< (rand) (fade-out scene-start))
-      [[(+ x3 (rand-int scatter)) (inc (rand-int y23))]
-       [(- width x3 (rand-int scatter)) (+ (quot y23 2) (rand-int y23))]])))
+      [[(+ x aa) y]
+       [(- width x aa) (- height y 1)]]))))
 
 (defn- create-walls [state]
-  (->> state
-       create-vertical-walls
-       (into (random-points generating-speed))
-       (remove free-pass)))
+  (->> (reduce (fn [acc _]
+                 (into acc (create-random-walls)))
+               []
+               (range generating-speed))
+       (into (create-elliptical-walls state))
+       (remove free-pass)
+       (remove (:borders state))))
 
 (defmethod update-state :generation
   [state]
@@ -53,13 +77,13 @@
   (doseq [[x y] borders]
     (q/rect x y 1 1))
   (q/fill (max 0 (- background-color
-                    (* 0.02 (- (q/millis) scene-start)))))
+                    (* 0.04 (- (q/millis) scene-start)))))
   (doseq [[x y] walls]
     (q/rect x y 1 1)))
 
 
 (defn- place-gold [walls]
-  (->> (random-points 30)
+  (->> (repeatedly 30 random-point)
        (remove walls)
        (take gold-amount)
        set))
@@ -67,12 +91,12 @@
 (defmethod key-press :generation
   [{:keys [walls] :as state}]
   (case (q/key-as-keyword)
-    :space (-> state
-               (assoc :screen-type :navigation)
-               (assoc :orig-walls walls)
-               (assoc :gold (place-gold walls))
-               (assoc :scene-start (q/millis)))
-    :q     (-> state
-               (assoc :screen-type :intro)
-               (assoc :walls #{}))
+    (:space :n) (-> state
+                    (assoc :screen-type :navigation)
+                    (assoc :orig-walls walls)
+                    (assoc :gold (place-gold walls))
+                    (assoc :scene-start (q/millis)))
+    :q          (-> state
+                    (assoc :screen-type :intro)
+                    (assoc :walls #{}))
     state))
