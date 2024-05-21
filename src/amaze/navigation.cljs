@@ -88,9 +88,17 @@
   (doseq [[x y] walls]
     (q/rect x y 1 1)))
 
-(defn- draw-player [[x-pos y-pos]]
-  (q/fill 50 150 90)
-  (q/ellipse x-pos y-pos 1 1))
+(defn- draw-player [{:keys [pos calc-duration scene-start path]}]
+  (let [[x-pos y-pos] pos]
+    (q/fill 50 150 90)
+    (if (and (< (calc-duration scene-start) 3)
+             (<= (count path) 1)
+             (= pos start))
+      (let [r (inc (mod (/ (q/millis) 300) 2))]
+        (q/ellipse-mode :center)
+        (q/ellipse (+ 0.5 x-pos) (+ 0.5 y-pos) r r)
+        (q/ellipse-mode :corner))
+      (q/ellipse x-pos y-pos 1 1))))
 
 (defn- draw-text
   [{:keys [cnt calc-duration scene-start walls bombs-used picked-gold]}]
@@ -136,7 +144,7 @@
   (draw-obstacles state)
   (draw-gold state true)
   (draw-bomb-explosion state)
-  (draw-player (:pos state)))
+  (draw-player state))
 
 
 (defn- deploy-bomb
