@@ -16,11 +16,12 @@
     state))
 
 
-(defn- draw-title [{:keys [score]}]
+(defn- draw-title [{:keys [score score-shown]}]
   (q/text-size title-size)
   (q/text-align :right)
   (q/text-style :bold)
-  (let [txt (if (>= score 1000)
+  (let [txt (if (and (= score score-shown)
+                     (>= score 1000))
               "aMAZEing VICTORY"
               "VICTORY")]
     (q/text txt (- scene-width right-margin) (* 0.1 scene-height))))
