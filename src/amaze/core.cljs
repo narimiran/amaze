@@ -19,10 +19,22 @@
 (defn- calc-scene-duration [scene-start]
   (quot (- (q/millis) scene-start) 1000))
 
+(defn- prevent-defaults []
+  (.addEventListener
+   js/document.body
+   "keydown"
+   (fn [e]
+     (when (#{9 32         ; tab, space
+              37 38 39 40  ; arrows
+              87 65 83 68} ; wasd
+            (.-keyCode e))
+       (.preventDefault e)))))
+
 (defn- settings []
   (q/smooth 8))
 
 (defn- setup []
+  (prevent-defaults)
   (q/frame-rate 30)
   (q/no-stroke)
   (q/ellipse-mode :corner)
