@@ -96,11 +96,17 @@
   (draw-keys)
   (draw-mini-map state))
 
+(defn- update-total-best [{:keys [total-best score] :as state}]
+  (if (> score total-best)
+    (do
+      (.. js/window -localStorage (setItem :high-score score))
+      (assoc state :total-best score))
+    state))
 
 (defn- update-score
-  [{:keys [maze-best total-best score] :as state}]
+  [{:keys [maze-best score] :as state}]
   (-> state
-      (assoc :total-best (max total-best score))
+      update-total-best
       (assoc :maze-best (max maze-best score))))
 
 (defmethod update-state :win

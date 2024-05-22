@@ -38,7 +38,7 @@
    :bombs-used    0
    :bomb-expls    []
    :maze-best     0
-   :total-best    0
+   :total-best    (or (.. js/window -localStorage (getItem :high-score)) 0)
    :gold          #{}
    :picked-gold   #{}
    :walls         #{}
