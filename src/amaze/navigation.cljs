@@ -1,7 +1,7 @@
 (ns amaze.navigation
   (:require
    [quil.core :as q]
-   [amaze.methods :refer [update-state draw key-press]]
+   [amaze.methods :refer [update-state draw key-press change-screen]]
    [amaze.config :refer [size start finish gold-multi gold-amount
                          bomb-multi bomb-limit width height
                          text-size x1 x2 x3 x4 x5 bottom-1 bottom-2
@@ -9,27 +9,27 @@
 
 
 (defn reset-level [state]
-  (-> state
-      (assoc :screen-type :navigation)
-      (assoc :walls (:orig-walls state))
-      (assoc :bombs-used 0)
-      (assoc :bombs-expls [])
-      (assoc :pos start)
-      (assoc :path [start])
-      (assoc :picked-gold #{})
-      (assoc :scene-start (q/millis))
-      (assoc :cnt 0)))
+  (change-screen state :navigation
+                 {:walls       (:orig-walls state)
+                  :bombs-used  0
+                  :bomb-expls  []
+                  :pos         start
+                  :path        [start]
+                  :picked-gold #{}
+                  :moves       0}))
 
 (defn quit-level [state]
   (-> state
       reset-level
-      (assoc :walls #{})
-      (assoc :maze-best 0)
-      (assoc :screen-type :generation)))
+      (change-screen :generation
+                     {:walls #{}
+                      :maze-best 0})))
 
-(defn- calc-score [{:keys [cnt walls win-time bombs-used picked-gold]}]
+(defn- calc-score [{:keys [moves walls win-time bombs-used picked-gold]}]
+  ;; It counts nr. of walls after bombs; not `orig-walls`.
+  ;; Not what I originally intended, but let it stay this way now.
   (- (+ (count walls) (* gold-multi (count picked-gold)))
-     cnt win-time (* bomb-multi bombs-used)))
+     moves win-time (* bomb-multi bombs-used)))
 
 (defn- pt+ [[x y] [dx dy]]
   [(+ x dx) (+ y dy)])
@@ -45,7 +45,7 @@
           (assoc :pos new-pos)
           (update :path conj new-pos)
           (assoc :last-move (q/millis))
-          (update :cnt inc)))))
+          (update :moves inc)))))
 
 (defn- make-move
   "A workaround to make repeated moves when a keys is held longer.
@@ -65,10 +65,9 @@
     (let [win-time (calc-duration scene-start)
           state    (assoc state :win-time win-time)
           score    (calc-score state)]
-      (-> state
-          (assoc :score score)
-          (assoc :score-shown (count walls))
-          (assoc :screen-type :win)))
+      (change-screen state :win
+                     {:score       score
+                      :score-shown (count walls)}))
 
     (and (gold pos)
          (not (picked-gold pos)))
@@ -101,7 +100,7 @@
       (q/ellipse x-pos y-pos 1 1))))
 
 (defn- draw-text
-  [{:keys [cnt calc-duration scene-start walls bombs-used picked-gold]}]
+  [{:keys [moves calc-duration scene-start walls bombs-used picked-gold]}]
   (q/fill 0)
   (q/text-size text-size)
   (q/text-style :normal)
@@ -112,7 +111,7 @@
           x2 bottom-1)
   (q/text (str "Bombs used: " bombs-used "/" bomb-limit) x3 bottom-1)
   (q/text (str "Gold taken: " (count picked-gold) "/" gold-amount) x4 bottom-1)
-  (q/text (str "Moves: " cnt) x5 bottom-1)
+  (q/text (str "Moves: " moves) x5 bottom-1)
 
   (q/text "SPACE  drop bomp" x1 bottom-2)
   (q/text "N  new maze" x2 bottom-2)
@@ -174,7 +173,7 @@
             (assoc :bomb-loc nbs)
             (assoc :bomb-time (q/millis))
             (update :bombs-used inc)
-            (update :bombs-expls into nbs)
+            (update :bomb-expls into nbs)
             (assoc :walls walls'))
         state))))
 

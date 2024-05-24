@@ -27,7 +27,7 @@
     (q/text txt (- scene-width right-margin) (* 0.1 scene-height))))
 
 (defn- draw-score
-  [{:keys [cnt walls win-time score-shown bombs-used picked-gold
+  [{:keys [moves walls win-time score-shown bombs-used picked-gold
            maze-best total-best]}]
   (let [right-pos  (- scene-width right-margin)
         wall-count (count walls)
@@ -36,7 +36,7 @@
         [y1 y11 y2 y3 y4 y5]
         (range y1 600 line-height)
         y6         (+ y5 line-height 10)
-        [y7 y8] (range (+ 50 y6) 600 line-height)]
+        [y7 y8]    (range (+ 50 y6) 600 line-height)]
     (q/text-size text-size)
     (q/text-style :normal)
     (q/text-align :left)
@@ -55,7 +55,7 @@
     (q/text-align :right)
     (q/text wall-count right-pos y1)
     (q/text (* gold-multi gold-count) right-pos y11)
-    (q/text (str "-" cnt) right-pos y2)
+    (q/text (str "-" moves) right-pos y2)
     (q/text (str "-" win-time) right-pos y3)
     (q/text (str (when (pos? bombs-used) "-")
                  (* bomb-multi bombs-used))
@@ -72,7 +72,7 @@
     (q/text "R   restart this maze" left-margin (+ y-pos line-height))))
 
 (defn- draw-mini-map
-  [{:keys [path bombs-expls] :as state}]
+  [{:keys [path bomb-expls] :as state}]
   (q/scale (* 0.5 size))
   (q/translate 2 2)
   (q/fill background-color)
@@ -83,7 +83,7 @@
   (doseq [[x y] path]
     (q/rect x y 1 1))
   (q/fill 240 80 20)
-  (doseq [[x y] bombs-expls]
+  (doseq [[x y] bomb-expls]
     (q/rect (+ 0.1 x) (+ 0.1 y) 0.8 0.8))
   (nav/draw-gold state false))
 

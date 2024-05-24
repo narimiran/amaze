@@ -1,10 +1,10 @@
 (ns amaze.maze-generation
   (:require
    [quil.core :as q]
-   [amaze.methods :refer [update-state draw key-press]]
-   [amaze.config :refer [size width height free-pass generating-speed
+   [amaze.methods :refer [update-state draw key-press change-screen]]
+   [amaze.config :refer [size width height free-area generating-speed
                          text-size bottom-1 bottom-2 x1 gold-amount
-                         background-color]]))
+                         background-color start finish]]))
 
 
 (defn- random-point []
@@ -34,17 +34,27 @@
      (* 0.00001 (- (q/millis) start))))
 
 (defn- create-elliptical-walls [{:keys [scene-start]}]
-  (let [a (quot width 6)
+  (let [a  (quot width 6)
         aa (* 2 a)
-        b (quot (* 3 height) 5)
-        x (- (rand-int aa) a)
-        y (inc (rand-int b))]
+        b  (quot (* 3 height) 5)
+        x  (- (rand-int aa) a)
+        y  (inc (rand-int b))]
     (when (< (+ (/ (* x x) (* a a))
                 (/ (* y y) (* b b)))
              1)
-    (when (< (rand) (fade-out scene-start))
-      [[(+ x aa) y]
-       [(- width x aa) (- height y 1)]]))))
+      (when (< (rand) (fade-out scene-start))
+        [[(+ x aa) y]
+         [(- width x aa) (- height y 1)]]))))
+
+(def free-pass
+  (let [[sx sy] start
+        [fx fy] finish]
+    (->> (for [dx (range free-area)
+               dy (range free-area)]
+           [[(+ sx dx) (+ sy dy)]
+            [(- fx dx) (- fy dy)]])
+         (apply concat)
+         set)))
 
 (defn- create-walls [state]
   (->> (reduce (fn [acc _]
@@ -91,12 +101,9 @@
 (defmethod key-press :generation
   [{:keys [walls] :as state}]
   (case (q/key-as-keyword)
-    (:space :n) (-> state
-                    (assoc :screen-type :navigation)
-                    (assoc :orig-walls walls)
-                    (assoc :gold (place-gold walls))
-                    (assoc :scene-start (q/millis)))
-    :q          (-> state
-                    (assoc :screen-type :intro)
-                    (assoc :walls #{}))
+    (:space :n) (change-screen state :navigation
+                               {:orig-walls walls
+                                :gold       (place-gold walls)})
+    :q          (change-screen state :intro
+                               {:walls #{}})
     state))

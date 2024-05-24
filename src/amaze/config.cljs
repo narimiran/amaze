@@ -14,16 +14,6 @@
 (def generating-speed 2)
 (def free-area 3)
 
-(def free-pass
-  (let [[sx sy] start
-        [fx fy] finish]
-    (->> (for [dx (range free-area)
-               dy (range free-area)]
-           [[(+ sx dx) (+ sy dy)]
-            [(- fx dx) (- fy dy)]])
-         (apply concat)
-         set)))
-
 (def title-size 36)
 (def text-size 14)
 (def line-height 20)

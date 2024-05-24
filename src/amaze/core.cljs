@@ -40,7 +40,7 @@
   (q/ellipse-mode :corner)
   (q/text-font "monospace" text-size)
   {:screen-type   :intro
-   :cnt           0
+   :moves         0
    :borders       (create-borders)
    :scene-start   (q/millis)
    :calc-duration calc-scene-duration
