@@ -2,7 +2,7 @@
   (:require
    [quil.core :as q]
    [quil.middleware :as m]
-   [amaze.methods :refer [update-state draw key-press]]
+   [amaze.methods :refer [update-state draw key-press key-release]]
    [amaze.config :refer [scene-width scene-height text-size
                          width height start finish]]
    [amaze.intro-screen]
@@ -35,7 +35,7 @@
 
 (defn- setup []
   (prevent-defaults)
-  (q/frame-rate 30)
+  (q/frame-rate 20)
   (q/no-stroke)
   (q/ellipse-mode :corner)
   (q/text-font "monospace" text-size)
@@ -55,6 +55,7 @@
    :picked-gold   #{}
    :walls         #{}
    :orig-walls    #{}
+   :keys-held     #{}
    :pos           start
    :path          [start]})
 
@@ -67,4 +68,5 @@
    :update #'update-state
    :draw #'draw
    :key-pressed #'key-press
+   :key-released #'key-release
    :middleware [m/fun-mode]))

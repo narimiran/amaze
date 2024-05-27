@@ -11,7 +11,7 @@
 (def start [1 1])
 (def finish [(dec (dec width)) (dec height)])
 
-(def generating-speed 2)
+(def generating-speed 3)
 (def free-area 3)
 
 (def title-size 36)
@@ -34,5 +34,3 @@
 (def bomb-limit 5)
 
 (def background-color 210)
-
-(def move-timeout 80)

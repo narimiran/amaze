@@ -1,11 +1,11 @@
 (ns amaze.navigation
   (:require
    [quil.core :as q]
-   [amaze.methods :refer [update-state draw key-press change-screen]]
+   [amaze.methods :refer [update-state draw key-press key-release change-screen]]
    [amaze.config :refer [size start finish gold-multi gold-amount
                          bomb-multi bomb-limit width height
                          text-size x1 x2 x3 x4 x5 bottom-1 bottom-2
-                         background-color move-timeout]]))
+                         background-color]]))
 
 
 (defn reset-level [state]
@@ -38,13 +38,11 @@
   [{:keys [pos borders walls] :as state} delta]
   (let [new-pos (pt+ pos delta)]
     (if (or (borders new-pos)
-            (walls new-pos)
-            (< (q/millis) (+ (:last-move state 0) move-timeout)))
+            (walls new-pos))
       state
       (-> state
           (assoc :pos new-pos)
           (update :path conj new-pos)
-          (assoc :last-move (q/millis))
           (update :moves inc)))))
 
 (defn- make-move
@@ -58,8 +56,15 @@
     (:d :ArrowRight) (check-and-move state [ 1  0])
     state))
 
+(defn- handle-keys [state]
+  (reduce
+   make-move
+   state
+   (:keys-held state)))
+
 (defmethod update-state :navigation
-  [{:keys [pos calc-duration scene-start walls gold picked-gold] :as state}]
+  [{:keys [pos calc-duration scene-start walls gold picked-gold keys-held]
+    :as state}]
   (cond
     (= pos finish)
     (let [win-time (calc-duration scene-start)
@@ -73,8 +78,8 @@
          (not (picked-gold pos)))
     (update state :picked-gold conj pos)
 
-    (q/key-pressed?)
-    (make-move state (q/key-as-keyword))
+    (some? keys-held)
+    (handle-keys state)
 
     :else
     state))
@@ -179,8 +184,13 @@
 
 (defmethod key-press :navigation
   [state]
-  (case (q/key-as-keyword)
-    :space (deploy-bomb state)
-    :r     (reset-level state)
-    :n     (quit-level state)
-    state))
+  (let [k (q/key-as-keyword)]
+    (case k
+      :space (deploy-bomb state)
+      :r     (reset-level state)
+      :n     (quit-level state)
+      (update state :keys-held conj k))))
+
+(defmethod key-release :navigation
+  [state e]
+  (update state :keys-held disj (:key e)))
