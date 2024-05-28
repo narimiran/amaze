@@ -35,7 +35,7 @@
 
 (defn- setup []
   (prevent-defaults)
-  (q/frame-rate 20)
+  (q/frame-rate 50)
   (q/no-stroke)
   (q/ellipse-mode :corner)
   (q/text-font "monospace" text-size)

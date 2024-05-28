@@ -36,13 +36,16 @@
 
 (defn- check-and-move
   [{:keys [pos borders walls] :as state} delta]
-  (let [new-pos (pt+ pos delta)]
+  (let [new-pos (pt+ pos delta)
+        lm (:last-move state 0)]
     (if (or (borders new-pos)
-            (walls new-pos))
+            (walls new-pos)
+            (< (+ lm 5) (q/millis) (+ lm 60)))
       state
       (-> state
           (assoc :pos new-pos)
           (update :path conj new-pos)
+          (assoc :last-move (q/millis))
           (update :moves inc)))))
 
 (defn- make-move
