@@ -3,7 +3,7 @@
    [quil.core :as q]
    [amaze.methods :refer [update-state draw key-press key-release change-screen]]
    [amaze.config :refer [size start finish gold-multi gold-amount
-                         bomb-multi bomb-limit width height
+                         bomb-multi bomb-limit time-multi width height
                          text-size x1 x2 x3 x4 x5 bottom-1 bottom-2
                          background-color]]))
 
@@ -29,7 +29,7 @@
   ;; It counts nr. of walls after bombs; not `orig-walls`.
   ;; Not what I originally intended, but let it stay this way now.
   (- (+ (count walls) (* gold-multi (count picked-gold)))
-     moves win-time (* bomb-multi bombs-used)))
+     moves (* time-multi win-time) (* bomb-multi bombs-used)))
 
 (defn- pt+ [[x y] [dx dy]]
   [(+ x dx) (+ y dy)])

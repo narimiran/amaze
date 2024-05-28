@@ -15,7 +15,8 @@
   (mapv + a b))
 
 (defn- create-maze []
-  (let [start (random-point)
+  (let [[sx sy] (random-point)
+        start [(- sx (mod sx 2)) (- sy (mod sy 2))]
         walls (set (for [x (range 1 (dec width))
                          y (range 1 (dec height))]
                      [x y]))]
@@ -30,8 +31,8 @@
                                          [nbx nby :as nb] (pt+ mid delta)]
                                   :when (and (not (visited nb))
                                              (not (visited mid))
-                                             (< -1 nbx width)
-                                             (< -1 nby height))]
+                                             (< 0 nbx (dec width))
+                                             (< 0 nby (dec height)))]
                               [mid nb]))]
           (if-let [[mid nb] (first nbs)]
             (recur (conj stack nb)
@@ -56,24 +57,6 @@
       (maze p)               (recur (random-point) (into picked (pick-neighbours maze p)))
       :else                  (recur (random-point) picked))))
 
-(defn- create-random-walls []
-  (let [[x y] (random-point)
-        x-    (dec x)
-        x+    (inc x)
-        y-    (dec y)
-        y+    (inc y)
-        f     16]
-    (condp > (rand)
-      (/ 1 f) [[x- y] [x y] [x+ y] [x+ y+]]
-      (/ 2 f) [[x- y-] [x y-] [x+ y-] [x- y+] [x+ y+]]
-      (/ 3 f) [[x y-] [x- y] [x y] [x+ y] [x y+]]
-      (/ 4 f) [[x y-] [x y] [x y+] [x+ y+]]
-      (/ 5 f) [[x- y-] [x- y] [x+ y] [x+ y+]]
-      (/ 6 f) [[x- y-] [x y-] [x y+] [x+ y+]]
-      (/ 7 f) [[x- y+] [x y] [x y-] [x+ y-]]
-      (/ 8 f) [[x- y] [x y] [x- y+] [x y+]]
-      [[x y]])))
-
 
 (def free-pass
   (let [[sx sy] start
@@ -88,8 +71,7 @@
 (def maze (create-maze))
 
 (defn- create-walls [state]
-  (->> (create-random-walls)
-       (into (pick-from-maze maze))
+  (->> (pick-from-maze maze)
        (remove free-pass)
        (remove (:borders state))))
 

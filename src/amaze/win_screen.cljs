@@ -3,7 +3,8 @@
    [quil.core :as q]
    [amaze.methods :refer [draw update-state key-press]]
    [amaze.config :refer [scene-width scene-height title-size text-size size
-                         left-margin right-margin line-height gold-multi bomb-multi
+                         left-margin right-margin line-height
+                         gold-multi bomb-multi time-multi
                          width height background-color]]
    [amaze.navigation :as nav]))
 
@@ -21,7 +22,7 @@
   (q/text-align :right)
   (q/text-style :bold)
   (let [txt (if (and (= score score-shown)
-                     (>= score 1000))
+                     (>= score 777))
               "aMAZEing VICTORY"
               "VICTORY")]
     (q/text txt (- scene-width right-margin) (* 0.1 scene-height))))
@@ -32,7 +33,7 @@
   (let [right-pos  (- scene-width right-margin)
         wall-count (count walls)
         gold-count (count picked-gold)
-        y1         (* 0.25 scene-height)
+        y1         (* 0.20 scene-height)
         [y1 y11 y2 y3 y4 y5]
         (range y1 600 line-height)
         y6         (+ y5 line-height 10)
@@ -44,7 +45,7 @@
     (q/text (str "Gold (x" gold-multi "):")
             left-margin y11)
     (q/text "Moves:" left-margin y2)
-    (q/text "Time:" left-margin y3)
+    (q/text (str "Time (x" time-multi "):") left-margin y3)
     (q/text (str "Bombs used (x" bomb-multi "):")
             left-margin y4)
     (q/rect left-margin y5 (- right-pos left-margin) 1)
@@ -56,7 +57,7 @@
     (q/text wall-count right-pos y1)
     (q/text (* gold-multi gold-count) right-pos y11)
     (q/text (str "-" moves) right-pos y2)
-    (q/text (str "-" win-time) right-pos y3)
+    (q/text (str "-" (* time-multi win-time)) right-pos y3)
     (q/text (str (when (pos? bombs-used) "-")
                  (* bomb-multi bombs-used))
             right-pos y4)
@@ -66,7 +67,7 @@
 
 
 (defn- draw-keys []
-  (let [y-pos (- scene-height 120)]
+  (let [y-pos (- scene-height 200)]
     (q/text-align :left)
     (q/text "N   create new maze" left-margin y-pos)
     (q/text "R   restart this maze" left-margin (+ y-pos line-height))))

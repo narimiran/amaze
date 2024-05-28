@@ -1,12 +1,12 @@
 (ns amaze.config)
 
 
-(def scene-width 840)
-(def scene-height 600)
-(def size 12)
+(def scene-width 880)
+(def scene-height 704)
+(def size 16)
 
 (def width (quot scene-width size))
-(def height (- (quot scene-height size) 4))
+(def height (- (quot scene-height size) 3))
 
 (def start [1 1])
 (def finish [(dec (dec width)) (dec height)])
@@ -30,6 +30,7 @@
 (def gold-amount 2)
 (def gold-multi 50)
 (def bomb-multi 30)
-(def bomb-limit 5)
+(def bomb-limit 3)
+(def time-multi 5)
 
 (def background-color 210)
