@@ -1,7 +1,8 @@
 (ns amaze.intro-screen
   (:require
    [quil.core :as q]
-   [amaze.methods :refer [draw key-press change-screen]]
+   [amaze.navigation :as nav]
+   [amaze.methods :refer [draw key-press]]
    [amaze.config :refer [title-size scene-width scene-height text-size]]))
 
 
@@ -29,5 +30,5 @@
 (defmethod key-press :intro
   [state]
   (case (q/key-as-keyword)
-    :space (change-screen state :generation)
+    :space (nav/new-maze state)
     state))

@@ -14,9 +14,9 @@
 (defn- pt+ [a b]
   (mapv + a b))
 
-(defn- create-maze []
+(defn create-maze []
   (let [[sx sy] (random-point)
-        start [(- sx (mod sx 2)) (- sy (mod sy 2))]
+        start [(- sx (mod sx 2) 1) (- sy (mod sy 2) 1)]
         walls (set (for [x (range 1 (dec width))
                          y (range 1 (dec height))]
                      [x y]))]
@@ -31,8 +31,8 @@
                                          [nbx nby :as nb] (pt+ mid delta)]
                                   :when (and (not (visited nb))
                                              (not (visited mid))
-                                             (< 0 nbx (dec width))
-                                             (< 0 nby (dec height)))]
+                                             (< -1 nbx width)
+                                             (< -1 nby height))]
                               [mid nb]))]
           (if-let [[mid nb] (first nbs)]
             (recur (conj stack nb)
@@ -68,10 +68,9 @@
          (apply concat)
          set)))
 
-(def maze (create-maze))
 
 (defn- create-walls [state]
-  (->> (pick-from-maze maze)
+  (->> (pick-from-maze (:maze state))
        (remove free-pass)
        (remove (:borders state))))
 

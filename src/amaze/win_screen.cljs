@@ -13,7 +13,7 @@
   [state]
   (case (q/key-as-keyword)
     :r (nav/reset-level state)
-    :n (nav/quit-level state)
+    :n (nav/new-maze state)
     state))
 
 

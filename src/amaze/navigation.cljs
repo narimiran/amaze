@@ -1,6 +1,7 @@
 (ns amaze.navigation
   (:require
    [quil.core :as q]
+   [amaze.maze-generation :as gen]
    [amaze.methods :refer [update-state draw key-press key-release change-screen]]
    [amaze.config :refer [size start finish gold-multi gold-amount
                          bomb-multi bomb-limit time-multi width height
@@ -18,11 +19,12 @@
                   :picked-gold #{}
                   :moves       0}))
 
-(defn quit-level [state]
+(defn new-maze [state]
   (-> state
       reset-level
       (change-screen :generation
                      {:walls #{}
+                      :maze (gen/create-maze)
                       :maze-best 0})))
 
 (defn- calc-score [{:keys [moves walls win-time bombs-used picked-gold]}]
@@ -191,7 +193,7 @@
     (case k
       :space (deploy-bomb state)
       :r     (reset-level state)
-      :n     (quit-level state)
+      :n     (new-maze state)
       (update state :keys-held conj k))))
 
 (defmethod key-release :navigation
