@@ -11,7 +11,6 @@
 (def start [1 1])
 (def finish [(dec (dec width)) (dec height)])
 
-(def generating-speed 2)
 (def free-area 3)
 
 (def title-size 36)

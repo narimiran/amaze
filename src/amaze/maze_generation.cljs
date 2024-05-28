@@ -2,7 +2,7 @@
   (:require
    [quil.core :as q]
    [amaze.methods :refer [update-state draw key-press change-screen]]
-   [amaze.config :refer [size width height free-area generating-speed
+   [amaze.config :refer [size width height free-area
                          text-size bottom-1 bottom-2 x1 gold-amount
                          background-color start finish]]))
 
@@ -11,13 +11,58 @@
   [(inc (rand-int (- width 2)))
    (inc (rand-int (- height 2)))])
 
+(defn- pt+ [a b]
+  (mapv + a b))
+
+(defn- create-maze []
+  (let [start (random-point)
+        walls (set (for [x (range 1 (dec width))
+                         y (range 1 (dec height))]
+                     [x y]))]
+    (loop [stack   (list start)
+           visited #{start}
+           walls   walls]
+      (if (empty? stack)
+        walls
+        (let [curr (peek stack)
+              nbs  (shuffle (for [delta [[1 0] [-1 0] [0 1] [0 -1]]
+                                  :let  [mid (pt+ curr delta)
+                                         [nbx nby :as nb] (pt+ mid delta)]
+                                  :when (and (not (visited nb))
+                                             (not (visited mid))
+                                             (< -1 nbx width)
+                                             (< -1 nby height))]
+                              [mid nb]))]
+          (if-let [[mid nb] (first nbs)]
+            (recur (conj stack nb)
+                   (conj visited curr mid nb)
+                   (disj walls curr mid nb))
+            (recur (pop stack)
+                   (conj visited curr)
+                   walls)))))))
+
+(defn- pick-neighbours [maze [px py]]
+  (for [x (range (dec px) (inc (inc px)))
+        y (range (dec py) (inc (inc py)))
+        :when (maze [x y])]
+    [x y]))
+
+
+(defn- pick-from-maze [maze]
+  (loop [p      (random-point)
+         picked #{}]
+    (cond
+      (>= (count picked) 10) picked
+      (maze p)               (recur (random-point) (into picked (pick-neighbours maze p)))
+      :else                  (recur (random-point) picked))))
+
 (defn- create-random-walls []
   (let [[x y] (random-point)
         x-    (dec x)
         x+    (inc x)
         y-    (dec y)
         y+    (inc y)
-        f     10]
+        f     16]
     (condp > (rand)
       (/ 1 f) [[x- y] [x y] [x+ y] [x+ y+]]
       (/ 2 f) [[x- y-] [x y-] [x+ y-] [x- y+] [x+ y+]]
@@ -29,22 +74,6 @@
       (/ 8 f) [[x- y] [x y] [x- y+] [x y+]]
       [[x y]])))
 
-(defn- fade-out [start]
-  (- 0.6
-     (* 0.00001 (- (q/millis) start))))
-
-(defn- create-elliptical-walls [{:keys [scene-start]}]
-  (let [a  (quot width 6)
-        aa (* 2 a)
-        b  (quot (* 3 height) 5)
-        x  (- (rand-int aa) a)
-        y  (inc (rand-int b))]
-    (when (< (+ (/ (* x x) (* a a))
-                (/ (* y y) (* b b)))
-             1)
-      (when (< (rand) (fade-out scene-start))
-        [[(+ x aa) y]
-         [(- width x aa) (- height y 1)]]))))
 
 (def free-pass
   (let [[sx sy] start
@@ -56,12 +85,11 @@
          (apply concat)
          set)))
 
+(def maze (create-maze))
+
 (defn- create-walls [state]
-  (->> (reduce (fn [acc _]
-                 (into acc (create-random-walls)))
-               []
-               (range generating-speed))
-       (into (create-elliptical-walls state))
+  (->> (create-random-walls)
+       (into (pick-from-maze maze))
        (remove free-pass)
        (remove (:borders state))))
 
