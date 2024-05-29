@@ -29,7 +29,7 @@
 
 (def gold-amount 2)
 (def gold-multi 50)
-(def bomb-multi 30)
+(def bomb-multi 40)
 (def bomb-limit 3)
 (def time-multi 5)
 

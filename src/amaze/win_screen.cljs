@@ -22,7 +22,7 @@
   (q/text-align :right)
   (q/text-style :bold)
   (let [txt (if (and (= score score-shown)
-                     (>= score 777))
+                     (>= score 700))
               "aMAZEing VICTORY"
               "VICTORY")]
     (q/text txt (- scene-width right-margin) (* 0.1 scene-height))))
@@ -100,7 +100,7 @@
 (defn- update-total-best [{:keys [total-best score] :as state}]
   (if (> score total-best)
     (do
-      (.. js/window -localStorage (setItem :high-score score))
+      (.. js/window -localStorage (setItem :v2-high-score score))
       (assoc state :total-best score))
     state))
 

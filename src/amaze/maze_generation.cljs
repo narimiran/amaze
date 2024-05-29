@@ -54,8 +54,12 @@
          picked #{}]
     (cond
       (>= (count picked) 10) picked
-      (maze p)               (recur (random-point) (into picked (pick-neighbours maze p)))
-      :else                  (recur (random-point) picked))))
+      (maze p) (recur (random-point)
+                      (into picked (pick-neighbours maze p)))
+      :else    (recur (random-point)
+                      (if (< (rand) 0.15)
+                        (conj picked p) ; put some walls at "wrong" places
+                        picked)))))
 
 
 (def free-pass
