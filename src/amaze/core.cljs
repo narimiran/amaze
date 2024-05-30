@@ -40,24 +40,10 @@
   (q/ellipse-mode :corner)
   (q/text-font "monospace" text-size)
   {:screen-type   :intro
-   :moves         0
    :borders       (create-borders)
    :scene-start   (q/millis)
    :calc-duration calc-scene-duration
-   :win-time      0
-   :score         0
-   :score-shown   0
-   :bombs-used    0
-   :bomb-expls    []
-   :maze-best     0
-   :total-best    (or (.. js/window -localStorage (getItem :v2-high-score)) 0)
-   :gold          #{}
-   :picked-gold   #{}
-   :walls         #{}
-   :orig-walls    #{}
-   :keys-held     #{}
-   :pos           start
-   :path          [start]})
+   :total-best    (or (.. js/window -localStorage (getItem :v2-high-score)) 0)})
 
 (defn -main []
   (q/sketch
