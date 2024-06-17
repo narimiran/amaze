@@ -34,3 +34,5 @@
 (def time-multi 3)
 
 (def background-color 210)
+
+(def hard-visibility-limit 10)

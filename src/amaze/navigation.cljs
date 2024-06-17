@@ -6,7 +6,7 @@
    [amaze.config :refer [size start finish gold-multi gold-amount
                          bomb-multi bomb-limit time-multi width height
                          text-size x1 x2 x3 x4 x5 bottom-1 bottom-2
-                         background-color]]))
+                         background-color hard-visibility-limit]]))
 
 
 (defn reset-level [state]
@@ -125,7 +125,8 @@
 
   (q/text "SPACE  drop bomp" x1 bottom-2)
   (q/text "N  new maze" x2 bottom-2)
-  (q/text "R  restart maze" x3 bottom-2))
+  (q/text "R  restart maze" x3 bottom-2)
+  (q/text "H  toggle hard mode" x4 bottom-2))
 
 (defn draw-gold [{:keys [gold picked-gold]} remove-picked?]
   (let [visible-gold (if remove-picked? (remove picked-gold gold) gold)]
@@ -151,6 +152,19 @@
               (+ 50 (rand-int 155)))
       (q/rect (+ 0.15 x) (+ 0.15 y) 0.7 0.7))))
 
+(defn- close? [[px py] x y]
+  (<= (+ (abs (- px x))
+         (abs (- py y)))
+      hard-visibility-limit))
+
+(defn- limit-view [{:keys [pos scene-start]}]
+  (let [alpha (min 255 (* 0.125 (- (q/millis) scene-start)))]
+    (q/fill 120 alpha))
+  (doseq [x     (range 1 (dec width))
+          y     (range 1 (dec height))
+          :when (not (close? pos x y))]
+    (q/rect x y 1 1)))
+
 (defmethod draw :navigation
   [state]
   (q/background background-color)
@@ -158,9 +172,11 @@
   (q/fill 0)
   (q/scale size)
   (draw-obstacles state)
-  (draw-gold state true)
   (draw-bomb-explosion state)
-  (draw-player state))
+  (draw-player state)
+  (when (:hard-mode? state)
+    (limit-view state))
+  (draw-gold state true))
 
 
 (defn- deploy-bomb
@@ -187,6 +203,10 @@
             (assoc :walls walls'))
         state))))
 
+(defn- toggle-hard-mode [state]
+  (update state :hard-mode? not))
+
+
 (defmethod key-press :navigation
   [state]
   (let [k (q/key-as-keyword)]
@@ -194,6 +214,7 @@
       :space (deploy-bomb state)
       :r     (reset-level state)
       :n     (new-maze state)
+      :h     (toggle-hard-mode state)
       (update state :keys-held conj k))))
 
 (defmethod key-release :navigation

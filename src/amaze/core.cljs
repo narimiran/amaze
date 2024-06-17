@@ -42,6 +42,7 @@
   {:screen-type   :intro
    :borders       (create-borders)
    :scene-start   (q/millis)
+   :hard-mode?    false
    :calc-duration calc-scene-duration
    :total-best    (or (.. js/window -localStorage (getItem :v2-high-score)) 0)})
 
