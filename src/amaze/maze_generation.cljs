@@ -49,17 +49,22 @@
     [x y]))
 
 
-(defn- pick-from-maze [maze]
-  (loop [p      (random-point)
-         picked #{}]
-    (cond
-      (>= (count picked) 10) picked
-      (maze p) (recur (random-point)
-                      (into picked (pick-neighbours maze p)))
-      :else    (recur (random-point)
-                      (if (< (rand) 0.15)
-                        (conj picked p) ; put some walls at "wrong" places
-                        picked)))))
+(defn- pick-from-maze [{:keys [maze calc-duration scene-start]}]
+  (let [duration (calc-duration scene-start)
+        limit (condp > duration
+                2.0 8
+                4.0 5
+                3)]
+   (loop [p      (random-point)
+          picked #{}]
+     (cond
+       (>= (count picked) limit) picked
+       (maze p) (recur (random-point)
+                       (into picked (pick-neighbours maze p)))
+       :else    (recur (random-point)
+                       (if (< (rand) 0.15)
+                         (conj picked p) ; put some walls at "wrong" places
+                         picked))))))
 
 
 (def free-pass
@@ -74,7 +79,8 @@
 
 
 (defn- create-walls [state]
-  (->> (pick-from-maze (:maze state))
+  (->> state
+       pick-from-maze
        (remove free-pass)
        (remove (:borders state))))
 
@@ -100,7 +106,7 @@
   (doseq [[x y] borders]
     (q/rect x y 1 1))
   (q/fill (max 0 (- background-color
-                    (* 0.04 (- (q/millis) scene-start)))))
+                    (* 0.03 (- (q/millis) scene-start)))))
   (doseq [[x y] walls]
     (q/rect x y 1 1)))
 
