@@ -145,10 +145,10 @@
 
 (defn- draw-bomb-explosion [{:keys [bomb-loc bomb-time]}]
   (when (<= (q/millis) (+ 300 bomb-time))
-    (q/fill (+ 200 (rand-int 55))
-            (+ 150 (rand-int 105))
-            (+ 50 (rand-int 155)))
     (doseq [[x y] bomb-loc]
+      (q/fill (+ 200 (rand-int 55))
+              (+ 150 (rand-int 105))
+              (+ 50 (rand-int 155)))
       (q/rect (+ 0.15 x) (+ 0.15 y) 0.7 0.7))))
 
 (defmethod draw :navigation
