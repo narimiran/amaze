@@ -2,7 +2,8 @@
   (:require
    [quil.core :as q]
    [quil.middleware :as m]
-   [amaze.methods :refer [update-state draw key-press key-release]]
+   [amaze.methods :refer [update-state draw key-press key-release
+                          mouse-press mouse-release]]
    [amaze.config :refer [scene-width scene-height text-size
                          width height start finish]]
    [amaze.intro-screen]
@@ -56,4 +57,6 @@
    :draw #'draw
    :key-pressed #'key-press
    :key-released #'key-release
+   :mouse-pressed #'mouse-press
+   :mouse-released #'mouse-release
    :middleware [m/fun-mode]))

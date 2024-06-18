@@ -1,7 +1,7 @@
 (ns amaze.maze-generation
   (:require
    [quil.core :as q]
-   [amaze.methods :refer [update-state draw key-press change-screen]]
+   [amaze.methods :refer [update-state draw key-press mouse-press change-screen]]
    [amaze.config :refer [size width height free-area
                          text-size bottom-1 bottom-2 x1 gold-amount
                          background-color start finish]]))
@@ -117,12 +117,19 @@
        (take gold-amount)
        set))
 
+(defn- stop-generation [{:keys [walls] :as state}]
+  (change-screen state :navigation
+                 {:orig-walls walls
+                  :gold       (place-gold walls)}))
+
 (defmethod key-press :generation
-  [{:keys [walls] :as state}]
+  [state]
   (case (q/key-as-keyword)
-    (:space :n) (change-screen state :navigation
-                               {:orig-walls walls
-                                :gold       (place-gold walls)})
+    (:space :n) (stop-generation state)
     :q          (change-screen state :intro
                                {:walls #{}})
     state))
+
+(defmethod mouse-press :generation
+  [state _e]
+  (stop-generation state))

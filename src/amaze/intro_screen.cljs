@@ -2,7 +2,7 @@
   (:require
    [quil.core :as q]
    [amaze.navigation :as nav]
-   [amaze.methods :refer [draw key-press]]
+   [amaze.methods :refer [draw key-press mouse-press]]
    [amaze.config :refer [title-size scene-width scene-height text-size]]))
 
 
@@ -32,3 +32,7 @@
   (case (q/key-as-keyword)
     :space (nav/new-maze state)
     state))
+
+(defmethod mouse-press :intro
+  [state _e]
+  (nav/new-maze state))
