@@ -1,7 +1,7 @@
 (ns amaze.win-screen
   (:require
    [quil.core :as q]
-   [amaze.methods :refer [draw update-state key-press]]
+   [amaze.methods :refer [draw update-state key-press mouse-press]]
    [amaze.config :refer [scene-width scene-height title-size text-size size
                          left-margin right-margin line-height
                          gold-multi bomb-multi time-multi
@@ -16,6 +16,12 @@
     :n (nav/new-maze state)
     state))
 
+(defmethod mouse-press :win
+  [state {:keys [button]}]
+  (case button
+    :left   (nav/new-maze state)
+    :center (nav/reset-level state)
+    state))
 
 (defn- draw-title [{:keys [score score-shown]}]
   (q/text-size title-size)

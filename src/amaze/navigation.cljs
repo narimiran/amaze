@@ -2,7 +2,8 @@
   (:require
    [quil.core :as q]
    [amaze.maze-generation :as gen]
-   [amaze.methods :refer [update-state draw key-press key-release change-screen]]
+   [amaze.methods :refer [update-state draw key-press key-release change-screen
+                          mouse-press mouse-release]]
    [amaze.config :refer [size start finish gold-multi gold-amount
                          bomb-multi bomb-limit time-multi width height
                          text-size x1 x2 x3 x4 x5 bottom-1 bottom-2
@@ -67,8 +68,19 @@
    state
    (:keys-held state)))
 
+(defn- handle-mouse [{:keys [pos click-x click-y] :as state}]
+  (let [[x y] pos
+        dx (- click-x x)
+        dy (- click-y y)]
+    (cond-> state
+     (pos? dx) (check-and-move [ 1  0])
+     (neg? dx) (check-and-move [-1  0])
+     (pos? dy) (check-and-move [ 0  1])
+     (neg? dy) (check-and-move [ 0 -1]))))
+
 (defmethod update-state :navigation
-  [{:keys [pos calc-duration scene-start walls gold picked-gold keys-held]
+  [{:keys [pos calc-duration scene-start walls gold picked-gold
+           keys-held click-x]
     :as state}]
   (cond
     (= pos finish)
@@ -82,6 +94,9 @@
     (and (gold pos)
          (not (picked-gold pos)))
     (update state :picked-gold conj pos)
+
+    (some? click-x)
+    (handle-mouse state)
 
     (some? keys-held)
     (handle-keys state)
@@ -220,3 +235,21 @@
 (defmethod key-release :navigation
   [state e]
   (update state :keys-held disj (:key e)))
+
+(defmethod mouse-press :navigation
+  [state {:keys [x y button]}]
+  (case button
+    :left   (let [x (quot x size)
+                  y (quot y size)]
+              (-> state
+                  (assoc :click-x x)
+                  (assoc :click-y y)))
+    :center (deploy-bomb state)
+    :right  (toggle-hard-mode state)
+    state))
+
+(defmethod mouse-release :navigation
+  [state _]
+  (-> state
+      (dissoc :click-x)
+      (dissoc :click-y)))

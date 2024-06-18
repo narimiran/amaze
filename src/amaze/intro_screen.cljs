@@ -2,7 +2,7 @@
   (:require
    [quil.core :as q]
    [amaze.navigation :as nav]
-   [amaze.methods :refer [draw key-press]]
+   [amaze.methods :refer [draw key-press mouse-press]]
    [amaze.config :refer [title-size scene-width scene-height text-size]]))
 
 
