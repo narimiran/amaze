@@ -15,7 +15,6 @@ pom.xml.asc
 .hgignore
 .hg/
 
-docs/js/cljs-runtime
-docs/js/manifest.edn
+docs/js
 
 *.zip
