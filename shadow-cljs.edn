@@ -1,11 +1,4 @@
-{:source-paths
- ["src"]
-
- :dependencies
- [[quil "4.3.1563"]]
-
- :nrepl
- {:middleware [cider.nrepl/cider-middleware]}
+{:deps true
 
  :dev-http
  {8080 "docs"}
